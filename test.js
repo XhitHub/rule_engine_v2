@@ -26,7 +26,7 @@ var rule2 = {
     "condition": function(R) {
         // console.log(this);
         // R.when(this.transactionTotal > this.limit && this.transactionTotal < 1000);
-        R.when(largerThan(this.transactionTotal, this.limit) && this.transactionTotal < 1000);
+        R.when(largerThan(this.transactionTotal, this.limitGetter.getLimit()) && this.transactionTotal < 1000);
     },
     "consequence": function(R) {
         this.result = true;
@@ -47,6 +47,11 @@ var fact = {
     "application": "MOB2",
     "transactionTotal": 600,
     "limit": 500,
+    limitGetter: {
+      getLimit: function() {
+        return 500
+      },
+    },
     "cardType": "Credit Card"
 };
 
