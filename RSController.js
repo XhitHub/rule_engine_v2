@@ -6,4 +6,8 @@ class RSController {
     this.rules = [];
     this.R = new RuleEngine();
   }
+
+  genRulesFromCSV(csvPath) {
+    
+  }
 }
