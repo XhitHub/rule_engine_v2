@@ -23,19 +23,24 @@ var rule = {
   }
 };
 var rule2 = {
-    "condition": function(R) {
-        // console.log(this);
-        // R.when(this.transactionTotal > this.limit && this.transactionTotal < 1000);
-        R.when(largerThan(this.transactionTotal, this.limitGetter.getLimit()) && this.transactionTotal < 1000);
-    },
-    "consequence": function(R) {
-        this.result = true;
-        this.reason = "this.transactionTotal > this.limit && this.transactionTotal < 1000, rob all, this.transactionTotal = 0";
-        this.transactionTotal = 0
-        console.log('inferencing', this);
-        R.next();
-    }
+  "condition": function(R) {
+      // console.log(this);
+      // R.when(this.transactionTotal > this.limit && this.transactionTotal < 1000);
+      R.when(largerThan(this.transactionTotal, this.limitGetter.getLimit()) && this.transactionTotal < 1000);
+  },
+  "consequence": function(R) {
+      this.result = true;
+      this.reason = "this.transactionTotal > this.limit && this.transactionTotal < 1000, rob all, this.transactionTotal = 0";
+      this.transactionTotal = 0
+      console.log('inferencing', this);
+      R.next();
+  }
 };
+var gRule1 = {
+  // have params map. or store in facts instead? store in facts with parent obj having unique id?
+  // condition: involves arg. [ how consequence is ] is based on wt params are subbed to the args. save params to params map
+  // consequence: involves arg. sub args using params map
+}
 
 /* Register Rule */
 R.register(rule);
