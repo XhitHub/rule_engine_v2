@@ -2,6 +2,9 @@
 // test class C: it always pass it's a to nearby Bs
 class Kl {
   constructor(p, wpn) {
+    // compulsory attrs
+    this.loading = 0 //can run inference if loading has becomes 0, to implement diff operations having diff time spent?
+    // class specific attrs
     this.position = p
     this.targetVt = null
     this.wpn = Fist()
