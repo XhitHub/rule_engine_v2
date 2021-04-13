@@ -1,5 +1,41 @@
 // define classes, classes actions / behaviours as rules, ...
 // test class C: it always pass it's a to nearby Bs
+class Connection {
+  constructor(name) {
+  }
+}
+
+class Place {
+  constructor(name) {
+    this.name = name
+    this.connections = []
+  }
+  addConnection(connection) {
+    this.connections.push(connection)
+  }
+}
+
+class Chara {
+  constructor(initialPosition) {
+    this.health = {
+      injs: {
+
+      }
+    },
+    this.position = initialPosition
+    this.wpn = Fist()
+    this.inventory = []
+  }
+  getAvailableActions() {
+    availableActions = []
+    // actions in curr place
+    
+  }
+  move(newPosition) {
+    this.position = newPosition
+  }
+}
+
 class Kl {
   constructor(p, wpn) {
     // compulsory attrs

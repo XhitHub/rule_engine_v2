@@ -36,6 +36,16 @@ var rule2 = {
       R.next();
   }
 };
+
+/*
+oors rules
+1. this.kl.actionPoints > 5 --> this.kl.atk()
+testing gRules: 
+1. attr is arg: this.$a1 > 1000 --> this.$a1 -= 100 | $a1 can be any val nested in anywhere
+1.2. this.$a1.hp <= 0 --> this.$a1.status = 0
+2. val is arg: this.transactionTotal > 2000 && this.reducer == $a --> this.transactionTotal -= $a | but this can be done by this.transactionTotal -= this.reducer instead in fact. all val is arg can be done by having the val be a fact instead?
+*/
+
 var gRule1 = {
   // have params map. or store in facts instead? store in facts with parent obj having unique id?
   // condition: involves arg. [ how consequence is ] is based on wt params are subbed to the args. save params to params map
