@@ -9,6 +9,7 @@ class Place {
   constructor(name) {
     this.name = name
     this.connections = []
+    this.nextPlaces = []
   }
   addConnection(connection) {
     this.connections.push(connection)
@@ -29,7 +30,7 @@ class Chara {
   getAvailableActions() {
     availableActions = []
     // actions in curr place
-    
+
   }
   move(newPosition) {
     this.position = newPosition
@@ -69,16 +70,7 @@ class Position {
   }
 }
 
-// define facts / place instances
-var kl1 = new Kl()
-var facts = {
-  kl1: kl1
-}
-var allInferencable = [kl1]
-
-// operate
-const inference = function() {
-  allInferencable.forEach(inf => {
-    inf.inference()
-  })
+module.exports = {
+  Place,
+  Chara,
 }
