@@ -1,5 +1,6 @@
 class IFController {
   constructor() {
+    // store list of characters in RS facts, which need to be accessed
     this.characters = []
   }
 
@@ -8,7 +9,11 @@ class IFController {
   }
 
   getCurrentFacts(characterID) {
-    // get current facts visible to character
+    // get current facts visible to character of the token
+    var character = this.characters.find(c => c.id == characterID)
+    if (character) {
+      return character.ts.observedFacts
+    }
   }
 
   takeAction(characterID, action) {
@@ -29,9 +34,10 @@ interactions with RS
     some facts are facts about data to be presented in RSIF?
 
 RSIF data
-1. custom code to define/control wt facts to be picked to show to player
-2. some facts rules are about [ wt facts player can see ]
+1. custom code to define/control wt facts to be picked to show to user
+2. some facts rules are about [ wt facts user can see ]. Probably make more sense as it should be gms logic which controls 
   eg
     character ts
+  then custom code in IFController to pick facts of [wt user-x can see] to return for user-x's request
       
 */
