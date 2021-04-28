@@ -19,10 +19,17 @@ class IFController {
   takeAction(characterID, action) {
     // directly exec action func of character?
     //   no if gms is not real time (e.g. takes turns)
+    var character = this.characters.find(c => c.id == characterID)
+    if (character) {
+      character.ts.actionToTake = action
+    }
   }
 
   getAvailableActions(characterID) {
-
+    var character = this.characters.find(c => c.id == characterID)
+    if (character) {
+      return character.ts.availableActions
+    }
   }
 }
 
