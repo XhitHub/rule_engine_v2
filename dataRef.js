@@ -1,4 +1,8 @@
 mtch = {
+  status: 'WAITING',
+  characterUserMapping: {
+    
+  },
   facts: {
   }
 }
