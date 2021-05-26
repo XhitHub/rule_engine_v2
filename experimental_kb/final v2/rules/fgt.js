@@ -6,27 +6,26 @@ const rules = [
         $p1: {
           action: atk($p2),
           wpn: {
-
+            speed: $s,
           }
         },
         time: $t
       },
       {
         $p2: {
-          ts: {
-            alert: gt(0.7)
-          },
           fgt: {
-            canDodge: gt(0.7)
+            canDodge: gt($s)
           },
 
         },
         time: $t
       }
     ]
-    /*
-    comments
-      same kind of action (atk), but 
-    */
   }
 ]
+
+/*
+comments
+  weird concept of [ return val func generator func ]
+  same kind of action (atk), but 
+*/
