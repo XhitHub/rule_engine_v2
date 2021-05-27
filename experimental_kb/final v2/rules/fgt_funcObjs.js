@@ -27,7 +27,10 @@ const rules = [
     ]
     /*
     comments
+      1
       only support val return funcs that has 2 args, as now at the nest leaf, key=arg1, val=arg2
+      2
+      weird logic
     */
   }
   
