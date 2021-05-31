@@ -70,13 +70,13 @@ var rules = [
   {
     lhs: [
       fact => (
-        fact.$kl.action.type == 'atk'
+        fact.$kl.action.type == 'dept_approve'
         &&
         fact.$kl.action.data.target == $vt
         &&
         fact.time == $t
         &&
-        rc.canDodge(fact.$vt, fact.$kl.wpn)
+        rc.canSubmit(fact.$vt, fact.$kl.wpn)
       )
     ],
     // lhs is AND on all facts in list of facts by default. each fact func check on single same fact obj. there may be too much implict things though
@@ -108,6 +108,19 @@ const rules = [
     }
   )
   /*
+    gRule should be able to be generated from system's auto recognizing gRule from its instances?
     this will return a gRule instance
+    wt is a fitting arg
+      all accessed nested fields exist
+        e.g. 
+          $kl.action.data.target
+          $kl.action.type
+        this can already narrow down possibilities, filtering out things that cannot be subbed
+      all accessed nested fields fits data type?
+        may not need as at condition val check eq/gt/... or not would have already handled?
+    for each arg
+      list all of its access of nested fields
+      when check if a thing can fit in the arg
+        check if each nested fields exist for the thing
   */
 ]
