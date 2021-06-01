@@ -138,6 +138,15 @@ const gRules = [
             in inference:
               inference for each complete combination of all args
               if 1 arg is missing/unable to be subbed with T val, should have no inference
+          problems
+            cannot specify in same fact obj or not?
+        or:
+          argConditionsV3
+            can only add to arg candidate if is valid and T
+            it is only arg condition, not yet the lhs condition of rule
+          lhs
+            keep current lhs
+          may have redundant things?
       */
       lhs: {
 
@@ -149,7 +158,7 @@ const gRules = [
         vt: vt => {
 
         },
-        ...
+        // ...
       }
     }
   )
