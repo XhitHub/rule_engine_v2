@@ -95,15 +95,61 @@ notes
 */
 
 // args
-const rules = [
+const gRules = [
   (args) => (
     {
-      args: {
-        $vt,
-        $kl
+      // conditions for a subbing to be valid, such that the subbed gRule is a valid rule / rule that is T
+      argConditions: args => {
+        return (
+          args.kl.action
+          &&
+          args.vt.fgt
+        )
       },
+      /*
+      should allow finding/searching fitting arg for each arg?
+      */
+      argConditionsV2: {
+        // 1 condition func for each arg, for checking if arg candidate (arg) is valid arg or not
+        kl: arg => arg.action != undefined,
+        vt: arg => arg.fgt != undefined,
+      },
+      possArgs: {
+        kl: [],
+        vt: [],
+      },
+      /*
+      Usage:
+        for each arg in argConditionsV2:
+          for poss arg candidate (can be each nested field/obj) in facts
+            check if arg candidate is valid
+              if valid
+                add to poss arg list for that arg
+        in generating arg subbing combinations:
+          generate with the lists of valid poss args
+        
+        or:
+        lhsV2:
+          LHS: have conditions grouped by args, when inference:
+            for poss arg candidate (can be each nested field/obj) in facts
+              check if arg candidate is valid and T
+                if valid and T
+                  add to arg list for that arg
+            in inference:
+              inference for each complete combination of all args
+              if 1 arg is missing/unable to be subbed with T val, should have no inference
+      */
       lhs: {
 
+      },
+      lhsV2: {
+        kl: kl => {
+
+        },
+        vt: vt => {
+
+        },
+        ...
       }
     }
   )
@@ -122,5 +168,19 @@ const rules = [
       list all of its access of nested fields
       when check if a thing can fit in the arg
         check if each nested fields exist for the thing
+    gRule concepts
+      args
+        1  
+          any thing can sub in
+            vals, objs, obj with deep nested structures, rules?, ...
+          if anything can sub in, in trying to sub a gRule, need to try all poss combination of subbing all diff things in the facts?
+            too large amount of combinations
+              needs narrowing / filtering
+                break the poss combination when 1 subbing failed
+        2
+          limit subbing condition
+            there needs to be subbing conditions anyway
+    gRule subbing process
+
   */
 ]
