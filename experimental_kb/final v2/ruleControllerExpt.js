@@ -65,9 +65,21 @@ const searchForPossGRuleSubbing = function(gRule, facts) {
 }
 
 class RulesController {
+  fillPossArgs(gRule, facts) {
+    // fill poss args for each arg
+    // ECMAScript 2017 needed
+    for (const [argName, argConditionFunc] of Object.entries(gRule.argConditions)) {
+      navAllObjs(facts, (target) => {
+        // operation: check if curr navAllObj target is a valid arg candidate by the argConditionFunc. if T,  add target to possArgs's curr arg entry
+        if (argConditionFunc(target)) {
+          gRule.possArgs[argName].push(target)
+        }
+      })
+    }
+  }
   navAllObjs(newFacts, operation) {
     // nav through all obj in any nested/arr position, exec passed in operation(obj)
-    
+    navAllObjsRecursive(newFacts, operation)
   }
   navAllObjsRecursive(target, operation) {
     if (this.isArray(target)) {
@@ -77,12 +89,13 @@ class RulesController {
     }
     else if (this.isObject(target)) {
       // ECMAScript 2017 needed
-      for (const [key, value] of Object.entries(object)) {
+      for (const [key, value] of Object.entries(target)) {
         navAllObjsRecursive(value, operation)
       }
     }
     else {
       // is simple val
+      operation(target)
     }
   }
   isArray(a) {
@@ -91,14 +104,4 @@ class RulesController {
   isObject(a) {
     return (!!a) && (a.constructor === Object);
   }
-}
-
-const navAllObjs = function(newFacts, operation) {
-  // nav through all obj in any nested/arr position, exec passed in operation(obj)
-
-}
-
-
-const fillPossArgs = function(gRule, facts) {
-
 }
