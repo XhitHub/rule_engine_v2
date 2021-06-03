@@ -105,3 +105,41 @@ class RulesController {
     return (!!a) && (a.constructor === Object);
   }
 }
+
+/*
+gRule instantiation samples
+gRule
+  {
+    t: $t, $vt.hp == $h, $vt.fgt.canDgd < $s, $kl.wpn.spd >= $s, $kl.action.type == 'atk', $kl.action.data.target == $vt
+  }
+  -->
+  {
+    t: $t + 1, $vt.hp -= $kl.wpn.dmg
+  }
+instantiations
+  fact-1:
+  {
+    t: 0,
+    char1: {
+      hp: 10,
+      fgt: {
+        canDgd: 0.5
+      }
+    },
+    char2: {
+      wpn: {
+        spd: 0.7,
+        dmg: 4
+      },
+      action: {
+        type: 'atk',
+        data: {
+          target: char1
+        }
+      }
+    },
+    ...
+  }
+
+in $vt.hp == $h, $h should only 
+*/
