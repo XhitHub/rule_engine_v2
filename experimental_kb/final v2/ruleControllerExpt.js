@@ -110,8 +110,18 @@ class RulesController {
 gRule instantiation samples
 gRule
   {
-    t: $t, $vt.hp == $h, $vt.fgt.canDgd < $s, $kl.wpn.spd >= $s, $kl.action.type == 'atk', $kl.action.data.target == $vt
+    t: $t, $vt.fgt.canDgd < $s, $kl.wpn.spd >= $s, $kl.action.type == 'atk', $kl.action.data.target == $vt
   }
+  or
+  {
+    t: $t, $vt.fgt.canDgd < $kl.wpn.spd, $kl.action.type == 'atk', $kl.action.data.target == $vt
+    some gRule achieve generic by directly involve diff nested fields, where the fields themselves are actually vars
+  }
+  instantiate instances for curr facts to fire on
+    should instantiate with $t being field t vals of existing facts
+    arg cond func for $t should limit $t to be [ can only be fact.t ]
+    have diff arg cond func for diff needs for the diff args
+      for $vt, it only need to be obj with .fgt.canDgd, ..., no restrictions on position of the obj
   -->
   {
     t: $t + 1, $vt.hp -= $kl.wpn.dmg
