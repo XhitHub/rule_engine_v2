@@ -114,6 +114,9 @@ const gRules = [
         kl: arg => arg.action != undefined,
         vt: arg => arg.fgt != undefined,
       },
+      argCandidates: {
+        kl:
+      },
       possArgs: {
         kl: [],
         vt: [],
