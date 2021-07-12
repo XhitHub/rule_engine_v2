@@ -65,7 +65,7 @@ const searchForPossGRuleSubbing = function(gRule, facts) {
 }
 
 class RulesController {
-  fillPossArgs(gRule, facts) {
+  fillPossArgsV1(gRule, facts) {
     // fill poss args for each arg
     // ECMAScript 2017 needed
     for (const [argName, argConditionFunc] of Object.entries(gRule.argConditions)) {

@@ -95,6 +95,23 @@ notes
 */
 
 // args
+const simpleGRule = (args) => (
+  {
+    lhs: [
+      fact => (
+        args.p1.action.type == 'atk'
+        &&
+        args.p1.action.data.target == args.p2
+        &&
+        fact.time == args.t1
+      )
+    ],
+    rhs: facts => {
+      args.p2.hp = 5
+
+    }
+  }
+)
 const gRules = [
   (args) => (
     {
@@ -115,7 +132,7 @@ const gRules = [
         vt: arg => arg.fgt != undefined,
       },
       argCandidates: {
-        kl:
+        kl: 
       },
       possArgs: {
         kl: [],
