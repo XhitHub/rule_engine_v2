@@ -1,0 +1,14 @@
+
+const gRules = [
+  arg => ({
+    lhs: [
+      fact => (
+        fact[arg['user']]['position'] == arg['pos']
+        && fact['time'] == arg['time']
+      ),
+      fact => (
+        fact['position']['hasTerm']
+      ),
+    ]
+  })
+]

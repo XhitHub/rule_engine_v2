@@ -37,3 +37,15 @@ const gRulesV2_2 = [
     ]
   }
 ]
+
+
+_findPotentiallyFittingFacts(gRule, facts, xhs) {
+    // xhs: gRule's which xhs to be searched in facts, e.g. 'lhs', 'rhs'
+    let possFittingFacts = []
+    facts.forEach(fact => {
+      gRule.searchForm[xhs].forEach(sFact => {
+        let sFactRegex = new RegExp(sFact, 'g');
+        let isFit = sFactRegex.test(fact)
+      })
+    })
+  }

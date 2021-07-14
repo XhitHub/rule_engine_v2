@@ -15,11 +15,20 @@ const gRules = [
     ],
     // consequence can be N new facts
     rhs: [
+      // it is still possible to extract and parse functions in such form
       '${char}$ is terminated at time ${sum(time, 1)}$',
     ],
     searchForm: {
       lhs: []
     },
+  },
+  {
+    lhs: [
+      '${char}$ is created at time ${time}$',
+    ],
+    rhs: [
+      '${char}$ is in ${room}$ at time ${{func: "sum", args: [{arg:"time"}, 1]}}$',
+    ]
   }
 ]
 /*
@@ -64,5 +73,6 @@ const argSubMap = {
 }
 
 module.exports = {
-  gRules
+  facts,
+  gRules,
 }
