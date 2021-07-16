@@ -5,6 +5,11 @@ class Controller{
 
   }
 
+  isArg(val) {
+    // check if val is of format '$xxx'
+    //TODO
+  }
+
   // a gFact can only match a currFact and cannot match across N currFacts
   // there may be N diff valid matchings, each match with diff currFact. especially in earlier steps of the subbings
   // return N subRes which are the N diff valid matchings subbing results
@@ -15,6 +20,36 @@ class Controller{
       // clone argSubMap for the new subRes entry
       // try to match the fact by gFact with the partly filled argSubMap
       // if match success, add the new subRes to subResList
+      let canMatch = true;
+      let argSubMap2 = mu.deepClone(subRes.argSubMap)
+      Object.keys(gFact).forEach(k => {
+        if (gFact[k] != fact[k]) {
+          if (!this.isArg(gFact[k])) {
+            // the field is not arg but not match
+            canMatch = false;
+          } else {
+            let argName = gFact[k]
+            if (argSubMap2[argName] != undefined) {
+              if (argSubMap2[argName] != fact[k]) {
+                // hv argSubMap entry and it doesnt match
+                canMatch = false;
+              } else {
+                // dont have argSubMap entry. add entry now
+                argSubMap2[argName] = fact[k]
+              }
+            }
+          }
+        }
+      })
+      if (canMatch) {
+        // add the new subRes to subResList
+        let subRes2 = {
+          argSubMap: argSubMap2,
+          gRule: subRes.gRule,
+          remainingGFacts: mu.deepClone(subRes.remainingGFacts),
+        }
+        subResList.push(subRes2);
+      }
     })
     return subResList
   }

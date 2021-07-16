@@ -19,3 +19,13 @@ const gRuleSubRes1 = {
 
     })
   }
+
+  
+        if (argSubMap2[k] == undefined) {
+          // this arg is not subbed yet
+        } else {
+          if (argSubMap2[k] != fact[k]) {
+            // hv argSubMap entry and it doesnt match
+            canMatch = false;
+          }
+        }
