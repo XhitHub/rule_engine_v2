@@ -1,0 +1,21 @@
+const gRuleSubRes1 = {
+  argSubMap: {
+
+  },
+  instance: {
+    lhs: [],
+    rhs: []
+  }
+}
+
+// return bool of [can match the gFact or not]? 
+  // modify argSubMap in-place
+  tryMatchFacts(gFact, availFacts, argSubMap) {
+
+  }
+
+  obtainAllForwardFirableInstances(gRule, availFacts) {
+    gRule.searchForm.lhs.forEach(gFact => {
+
+    })
+  }
