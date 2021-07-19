@@ -2,12 +2,17 @@ var mu = require.main.require('./myUtil');
 
 class Controller{
   constructor() {
-
+    this.argRegex = new RegExp('\$.+', 'g');
   }
 
   isArg(val) {
     // check if val is of format '$xxx'
     //TODO
+    return this.argRegex.test(val)
+  }
+
+  getArgName(searchFormArgName) {
+    return searchFormArgName.replace('$','');
   }
 
   // a gFact can only match a currFact and cannot match across N currFacts
@@ -28,7 +33,7 @@ class Controller{
             // the field is not arg but not match
             canMatch = false;
           } else {
-            let argName = gFact[k]
+            let argName = getArgName(gFact[k]);
             if (argSubMap2[argName] != undefined) {
               if (argSubMap2[argName] != fact[k]) {
                 // hv argSubMap entry and it doesnt match
@@ -36,6 +41,11 @@ class Controller{
               } else {
                 // dont have argSubMap entry. add entry now
                 argSubMap2[argName] = fact[k]
+                // check argConstraints. if cannot pass constraints, it is an invalid subbing, thus is cannot match
+                let passArgConstraintsCheck = subRes.gRule.argConstraints(argSubMap2)
+                if (!passArgConstraintsCheck) {
+                  canMatch = false;
+                }
               }
             }
           }
@@ -53,8 +63,12 @@ class Controller{
     })
     return subResList
   }
+  
+  instantiateGRule(gRule, argMap) {
+    return gRule.generator(argMap)
+  }
 
-  // return all subRes?
+  // return all subRes? or return all subbed instances?
   forwardSub(gRule, availFacts) {
     let finishedSubResList = []
     let initialSubRes = {
@@ -64,9 +78,12 @@ class Controller{
       gRule: gRule,
       remainingGFacts: mu.deepClone(gRule.searchForm.lhs),
     }
-    forwardSubRecursive(initialSubRes, availFacts, finishedSubResList);
     // beware of potential async
-    return finishedSubResList;
+    forwardSubRecursive(initialSubRes, availFacts, finishedSubResList);
+    console.log("Controller -> forwardSub -> finishedSubResList", finishedSubResList)
+    // instantiate GRules using the finishedSubResList
+    let gRuleInstances = finishedSubResList.map(subRes => this.forwardSub(subRes.gRule, subRes.argMap));
+    return gRuleInstances;
   }
 
   forwardSubRecursive(subRes, availFacts, finishedSubResList) {
@@ -90,6 +107,7 @@ class Controller{
       return;
     }
   }
+
 
   /*
   obtain and store list of poss matchable curr fact for each gFact

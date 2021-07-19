@@ -1,3 +1,5 @@
+var mu = require.main.require('./myUtil');
+
 /* 
 all facts are:
   simple single layer key val map
@@ -72,13 +74,13 @@ const gRules = [
     searchForm: {
       lhs: [
         {
-          user: '$1',
-          pos: '$2',
-          time: '$3',
+          user: '$user',
+          pos: '$pos',
+          time: '$time',
         },
         {
-          room: '$2',
-          time: '$4',
+          room: '$pos',
+          time: '$time2',
           hasTerm: true,
         },
       ],
@@ -86,18 +88,26 @@ const gRules = [
         {
           user: '$1',
           status: 'terminated',
-          time: '$5',
+          time: '$time3',
         }
       ]
     },
-    // use argConstraints for arg checking instead?
+    /* use argConstraints for arg checking instead?
       // relationships between / constraints about args are specified here
       // actually can sub casually without checking, then just instantiate with the args map. invalid subbed rules wont get fired anyway?
       // some constraints like == are set by [using the same arg key]
-    argConstraints: [
-      arg['$3'] == arg['$4'] + 1,
-      arg['$3'] == arg['$5'] - 1
-    ],
+      // this argConstraints checks whether relationships between / constraints about args are fullfilled
+      can use search form to instantiate gRule?
+        cannot instantiate args that are determ by relationship with some other determined args, e.g. $time3
+        need to use the generator anyway
+    */
+    argConstraints: args => {(
+      (!mu.allDefined(args, ['$time', '$time2']) || args['$time'] == args['$time2'] + 1)
+      &&
+      (!mu.allDefined(args, ['$time', '$time3']) || args['$time'] == args['$time3'] - 1)
+      // need to handle arg not yet subbed case by !mu.allDefined
+    )},
+    // need 2 generators, 1 for foward, 1 for backward? as there may be problems when subbing arg that is relationship function returned val?
     generator: args => ({
       lhs: [
         {

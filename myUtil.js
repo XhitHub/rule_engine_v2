@@ -3,6 +3,17 @@ const deepClone = obj => {
   return JSON.parse(s);
 }
 
+const allDefined = (map, keys) => {
+  let res = true
+  keys.forEach(k => {
+    if (map[k] == undefined) {
+      res = false;
+    }
+  });
+  return res;
+}
+
 module.export = {
-  deepClone
+  deepClone,
+  allDefined,
 }
