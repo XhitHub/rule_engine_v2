@@ -1,4 +1,5 @@
-var mu = require.main.require('./myUtil');
+// var mu = require.main.require('./myUtil');
+var mu = require('../../myUtil');
 
 class Controller{
   constructor() {
@@ -19,6 +20,7 @@ class Controller{
   // there may be N diff valid matchings, each match with diff currFact. especially in earlier steps of the subbings
   // return N subRes which are the N diff valid matchings subbing results
   tryMatchFacts(gFact, availFacts, subRes) {
+    console.log("Controller -> tryMatchFacts -> subRes", subRes)
     let subResList = []
     availFacts.forEach(fact => {
       // TODO: impl the below
@@ -72,14 +74,12 @@ class Controller{
   forwardSub(gRule, availFacts) {
     let finishedSubResList = []
     let initialSubRes = {
-      argSubMap: {
-
-      },
+      argSubMap: {},
       gRule: gRule,
       remainingGFacts: mu.deepClone(gRule.searchForm.lhs),
     }
     // beware of potential async
-    forwardSubRecursive(initialSubRes, availFacts, finishedSubResList);
+    this.forwardSubRecursive(initialSubRes, availFacts, finishedSubResList);
     console.log("Controller -> forwardSub -> finishedSubResList", finishedSubResList)
     // instantiate GRules using the finishedSubResList
     let gRuleInstances = finishedSubResList.map(subRes => this.forwardSub(subRes.gRule, subRes.argMap));
@@ -87,6 +87,7 @@ class Controller{
   }
 
   forwardSubRecursive(subRes, availFacts, finishedSubResList) {
+    console.log("Controller -> forwardSubRecursive -> subRes", subRes)
     // if there is no more remaining gFacts left, the recursion is finished
     if (subRes.remainingGFacts.length == 0) {
       // this is a finished subRes where all gFacts in lhs is subbed successfully. add this to final res list and end recursion
@@ -96,11 +97,12 @@ class Controller{
     // pop a remaining gFact to process in this recursive step
     let gFact = subRes.remainingGFacts.pop()
     // try to match this gFact with availFacts, with already decided arg subbings. will update argSubMap
-    let subResList = tryMatchFacts(gFact, availFacts, subRes.argSubMap)
+    let subResList = this.tryMatchFacts(gFact, availFacts, subRes)
+    console.log("Controller -> forwardSubRecursive -> subResList", subResList)
     if (subResList.length > 0) {
       // recursively go on process
       subResList.forEach(subRes2 => {
-        forwardSubRecursive(subRes2, availFacts, finishedSubResList)
+        this.forwardSubRecursive(subRes2, availFacts, finishedSubResList)
       })
     } else {
       // this gRule has gFact (the gFact being processed in curr step) in xhs that cannot match any avail facts, thus should stop any further subbing on this gRule
@@ -113,3 +115,5 @@ class Controller{
   obtain and store list of poss matchable curr fact for each gFact
   */
 }
+
+module.exports = Controller;

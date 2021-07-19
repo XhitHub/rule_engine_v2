@@ -1,5 +1,5 @@
-var mu = require.main.require('./myUtil');
-
+// var mu = require.main.require('./myUtil');
+var mu = require('../../myUtil');
 /* 
 all facts are:
   simple single layer key val map
@@ -20,7 +20,7 @@ using gRules
       find gRules that can be applied on some of the current facts, instantiate and fire the rules to inference facts
         find poss gRules that can be subbed to have all lhs matched some curr facts
           find gRules that can be subbed so that all lhs gFacts can be matched with some curr facts
-            where  
+            where
               fact-a can be matched with fact-b:
                   all key val pairs in fact-a is also found in fact-b
           for each gRule
@@ -146,12 +146,12 @@ const gRuleSubRes1 = {
   argSubMap: {
 
   },
-  gRule: gr1,
+  gRule: null,
   // remaining gFacts in searchForm lhs?
   remainingGFacts: [],
 }
 
-module.export = {
+module.exports = {
   facts,
   gRules
 }

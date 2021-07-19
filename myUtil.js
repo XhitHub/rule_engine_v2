@@ -13,7 +13,7 @@ const allDefined = (map, keys) => {
   return res;
 }
 
-module.export = {
+module.exports = {
   deepClone,
   allDefined,
 }
