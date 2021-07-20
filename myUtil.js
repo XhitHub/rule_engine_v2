@@ -13,7 +13,15 @@ const allDefined = (map, keys) => {
   return res;
 }
 
+const concatNoRepeat = (arr1, arr2) => {
+  let arr3 = arr1.concat(arr2)
+  let set = new Set(arr3)
+  let arr4 = Array.from(set)
+  return arr4
+}
+
 module.exports = {
   deepClone,
   allDefined,
+  concatNoRepeat,
 }

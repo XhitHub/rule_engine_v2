@@ -80,7 +80,52 @@ class Controller{
     return gRule.generator(argMap)
   }
 
-  // return all subRes? or return all subbed instances?
+  // fact is true if all of it match partial of at least 1 of availFacts
+  // but how about NOT statements? can add 1 more check: check if all of the fact match partial of at least 1 of the NOT ge availFacts 
+  isFactTrue(fact, availFacts) {
+    let match = false;
+    availFacts.forEach(aFact => {
+      let matchAll = true;
+      Object.keys(fact).forEach(k => {
+        if (fact[k] != aFact[k]) {
+          // this k is not found in the aFact
+          matchAll = false;
+        }
+      })
+      if (matchAll = true) {
+        // fact is true if all of it match partial of at least 1 of availFacts
+        match = true
+      }
+    })
+    return match
+  }
+
+  // return new facts. more consistent with gRule instantiation
+  forward(rule, availFacts) {
+    let canFire = true;
+    rule.lhs.forEach(fact => {
+      if (!this.isFactTrue(fact, availFacts)) {
+        // at least 1 fact in xhs is false, cannot fire
+        canFire = false;
+      }
+    })
+    if (canFire) {
+      // potentially have redundant facts in availFacts. can have [clear redundant fact] regularly to resolve the issue?
+      return rule.rhs;
+    } else {
+      return []
+    }
+    // return canFire
+  }
+
+  // return availFacts with redundant facts removed
+  clearRedundantFact(availFacts) {
+    let afsSet = new Set(availFacts)
+    let availFacts2 = Array.from(afsSet)
+    return availFacts2
+  }
+
+  // return all subbed instances?
   forwardSub(gRule, availFacts) {
     let finishedSubResList = []
     let initialSubRes = {

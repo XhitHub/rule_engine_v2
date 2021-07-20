@@ -29,3 +29,49 @@ const gRuleSubRes1 = {
             canMatch = false;
           }
         }
+
+
+argConstraints: args => (
+      (!mu.allDefined(args, ['$time', '$time2']) || args['$time'] == args['$time2'] + 1)
+      &&
+      (!mu.allDefined(args, ['$time', '$time3']) || args['$time'] == args['$time3'] - 1)
+      // need to handle arg not yet subbed case by !mu.allDefined
+    ),
+
+
+  // return list of new facts
+  forward(rule, availFacts) {
+    let canFire = true;
+    rule.lhs.forEach(fact => {
+      if (!this.isFactTrue(fact, availFacts)) {
+        // at least 1 fact in xhs is false, cannot fire
+        canFire = false;
+      }
+    })
+    if (canFire) {
+      // potentially have redundant facts in availFacts. can have [clear redundant fact] regularly to resolve the issue?
+      return rule.rhs
+    } else {
+      return []
+    }
+    // return canFire
+  }
+
+
+  // modify availFacts in-place
+  forward(rule, availFacts) {
+    let canFire = true;
+    rule.lhs.forEach(fact => {
+      if (!this.isFactTrue(fact, availFacts)) {
+        // at least 1 fact in xhs is false, cannot fire
+        canFire = false;
+      }
+    })
+    if (canFire) {
+      // potentially have redundant facts in availFacts. can have [clear redundant fact] regularly to resolve the issue?
+      rule.rhs.forEach(rFact => {
+        availFacts.push(rFact)
+      })
+    }
+    // return canFire
+  }

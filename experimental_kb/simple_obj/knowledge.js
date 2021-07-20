@@ -58,6 +58,13 @@ const facts = [
     id: 1,
     user: 'c1',
     pos: 'room1',
+    time: 5,
+    wpn: 'kn',
+  },
+  {
+    id: 1,
+    user: 'c1',
+    pos: 'room1',
     time: 0,
     wpn: 'kn',
   },
@@ -65,7 +72,7 @@ const facts = [
     room: 'room1',
     hasTerm: true,
     time: -1,
-  }
+  },
 ]
 
 const gRules = [
@@ -102,9 +109,9 @@ const gRules = [
         need to use the generator anyway
     */
     argConstraints: args => (
-      (!mu.allDefined(args, ['$time', '$time2']) || args['$time'] == args['$time2'] + 1)
+      (!mu.allDefined(args, ['time', 'time2']) || args['time'] == args['time2'] + 1)
       &&
-      (!mu.allDefined(args, ['$time', '$time3']) || args['$time'] == args['$time3'] - 1)
+      (!mu.allDefined(args, ['time', 'time3']) || args['time'] == args['time3'] - 1)
       // need to handle arg not yet subbed case by !mu.allDefined
     ),
     // need 2 generators, 1 for foward, 1 for backward? as there may be problems when subbing arg that is relationship function returned val?
@@ -149,6 +156,24 @@ const gRuleSubRes1 = {
   gRule: null,
   // remaining gFacts in searchForm lhs?
   remainingGFacts: [],
+}
+
+const wrd = {
+  // just data, func obj
+  facts: [],
+  rules: [],
+  gRules: []
+}
+
+const wrdCase = {
+  // have combined/overrided facts, rules
+  facts: [
+
+  ],
+  rules: [],
+  wrd: {
+    
+  },
 }
 
 module.exports = {
