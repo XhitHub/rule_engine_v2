@@ -101,12 +101,12 @@ const gRules = [
         cannot instantiate args that are determ by relationship with some other determined args, e.g. $time3
         need to use the generator anyway
     */
-    argConstraints: args => {(
+    argConstraints: args => (
       (!mu.allDefined(args, ['$time', '$time2']) || args['$time'] == args['$time2'] + 1)
       &&
       (!mu.allDefined(args, ['$time', '$time3']) || args['$time'] == args['$time3'] - 1)
       // need to handle arg not yet subbed case by !mu.allDefined
-    )},
+    ),
     // need 2 generators, 1 for foward, 1 for backward? as there may be problems when subbing arg that is relationship function returned val?
     generator: args => ({
       lhs: [

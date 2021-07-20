@@ -20,4 +20,4 @@ const c = new Controller();
 var {gRules, facts} = kn;
 console.log("kn", kn)
 var res = c.forwardSub(gRules[0], facts);
-console.log("res", res)
+console.log("res", JSON.stringify(res))

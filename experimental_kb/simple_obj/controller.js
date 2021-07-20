@@ -8,8 +8,8 @@ class Controller{
 
   isArg(val) {
     // check if val is of format '$xxx'
-    //TODO
-    return this.argRegex.test(val)
+    // return this.argRegex.test(val)
+    return /\$.+/.test(val)
   }
 
   getArgName(searchFormArgName) {
@@ -30,27 +30,37 @@ class Controller{
       let canMatch = true;
       let argSubMap2 = mu.deepClone(subRes.argSubMap)
       Object.keys(gFact).forEach(k => {
+        console.log("Controller -> tryMatchFacts -> argSubMap2", argSubMap2)
+        console.log("Controller -> tryMatchFacts -> k", k)
+        console.log("Controller -> tryMatchFacts -> fact[k]", fact[k])
+        console.log("Controller -> tryMatchFacts -> gFact[k]", gFact[k])
         if (gFact[k] != fact[k]) {
+          console.log("Controller -> tryMatchFacts -> this.isArg(gFact[k])", this.isArg(gFact[k]))
           if (!this.isArg(gFact[k])) {
             // the field is not arg but not match
             canMatch = false;
           } else {
-            let argName = getArgName(gFact[k]);
+            let argName = this.getArgName(gFact[k]);
             if (argSubMap2[argName] != undefined) {
               if (argSubMap2[argName] != fact[k]) {
                 // hv argSubMap entry and it doesnt match
                 canMatch = false;
               } else {
+                // won't ban this canMatch
+              }
+            } else {
                 // dont have argSubMap entry. add entry now
                 argSubMap2[argName] = fact[k]
                 // check argConstraints. if cannot pass constraints, it is an invalid subbing, thus is cannot match
                 let passArgConstraintsCheck = subRes.gRule.argConstraints(argSubMap2)
+                console.log("Controller -> tryMatchFacts -> passArgConstraintsCheck", passArgConstraintsCheck)
                 if (!passArgConstraintsCheck) {
                   canMatch = false;
                 }
-              }
             }
           }
+        } else {
+          // won't ban this canMatch
         }
       })
       if (canMatch) {
@@ -82,7 +92,7 @@ class Controller{
     this.forwardSubRecursive(initialSubRes, availFacts, finishedSubResList);
     console.log("Controller -> forwardSub -> finishedSubResList", finishedSubResList)
     // instantiate GRules using the finishedSubResList
-    let gRuleInstances = finishedSubResList.map(subRes => this.forwardSub(subRes.gRule, subRes.argMap));
+    let gRuleInstances = finishedSubResList.map(subRes => this.instantiateGRule(subRes.gRule, subRes.argSubMap));
     return gRuleInstances;
   }
 
@@ -97,6 +107,7 @@ class Controller{
     // pop a remaining gFact to process in this recursive step
     let gFact = subRes.remainingGFacts.pop()
     // try to match this gFact with availFacts, with already decided arg subbings. will update argSubMap
+    console.log("Controller -> forwardSubRecursive -> availFacts", availFacts)
     let subResList = this.tryMatchFacts(gFact, availFacts, subRes)
     console.log("Controller -> forwardSubRecursive -> subResList", subResList)
     if (subResList.length > 0) {
