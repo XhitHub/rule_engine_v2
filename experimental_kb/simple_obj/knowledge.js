@@ -14,6 +14,12 @@ advantages of this form comparing to text form:
   better placing of args, funcs
   easier arg operations
     arg finding poss subs
+but text forms are supposed to be able to handle alt forms by translators, translating rules?
+advantages of text form comparing to obj form:
+  wont have vague meanings
+  don't have to carefully think about how to represent a fact by fact obj, as only need to follow language?
+  easier to make translating rules?
+  will have large amount of data of text articles available for testing?
 using gRules
   forward inference
     need to
@@ -78,6 +84,7 @@ const facts = [
 const gRules = [
   {
     // this searchForm only specify which args are of same val. info about relationships like sum(), +1, -1, ... are not included. Those are to be checked in real subbing
+    // instantiation may only find poss useful instances, bu tmay not find definitely useful instances
     searchForm: {
       lhs: [
         {
@@ -127,8 +134,19 @@ const gRules = [
           time: args.time - 1,
           hasTerm: true,
         },
+        // investigate NOT lhs conditions
+        {
+          // NOT by not flag. having NOT flag means this fact obj is a NOT condition
+          // it may not be included in searchForm. some conditions are hard to have search form.
+          NOT: true,
+          type: 'func', // specify type for special type conditions?
+          user: args.user,
+          hasShield: true,
+          time: () => le(args.time), // of relationship [ less than or equal ].
+        }
       ],
       rhs: [
+        // all rhs facts must be solid fact objs, with solid values
         {
           user: args.user,
           status: 'terminated',
@@ -136,6 +154,61 @@ const gRules = [
         },
       ]
     })
+  }
+]
+
+gRulesV2 = [
+  {
+    lhs: [
+      {
+        user: '$user',
+        pos: '$pos',
+        time: '$time',
+      },
+      {
+        room: '$pos',
+        time: '$time2',
+        hasTerm: true,
+      },
+    ],
+    lhsNot: [
+      // for NOT, need to check with any fact objs that fits the arg conditions, and ensure that none is T
+      /*
+        in subbing: foreach fact obj in lhsNot, go through all avail facts to see if there is any aFact that fit this gFact
+        argSubMap should have enough info so that the argChecks can be done
+        or in subbing, each sub need to check with lhsNot, and ensure that no any fact obj in lhsNot is matched in availFacts?
+      */
+      {
+        user: '$user',
+        hasShield: true,
+        time: '$time4',
+      }
+    ],
+    rhs: [
+      {
+        user: '$1',
+        status: 'terminated',
+        time: '$time3',
+      }
+    ],
+    // arg related stuffs
+    argChecks: [
+      args => args['time'] == args['time2'] + 1,
+      args => args['time'] == args['time3'] - 1,
+      args => args['time'] >= args['time4'],
+    ],
+    argChecksV2: {
+      // then can only check specific subbed args
+      time: args => args['time'] == args['time2'] + 1 && args['time'] == args['time3'] - 1 && args['time'] >= args['time4'],
+      time2: args => args['time'] == args['time2'] + 1,
+      time3: args => args['time'] == args['time3'] - 1,
+      time4: args => args['time'] >= args['time4'],
+    },
+    argDeterm: {
+      // all args in LHS, LHSNOT should be all settled in argSubMap; some args in RHS may not be settled yet
+      time3: args => args['time'] + 1,
+    }
+    // should be able to instantiate gRule with argSubMap and argDeterm?
   }
 ]
 

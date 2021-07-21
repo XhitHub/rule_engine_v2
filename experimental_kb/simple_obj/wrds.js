@@ -57,6 +57,70 @@ const wrd1 = {
   ]
 }
 
+const wrdDfc1 = {
+  facts: [],
+  rules: [],
+  gRules: [
+    {
+      searchForm: {
+        lhs: [
+          {
+            user: '$c1',
+          }
+        ]
+      }
+    }
+  ],
+}
+
+const wrdDfc2 = {
+  facts: [],
+  rules: [],
+  gRules: [
+    {
+      lhs: [
+        {
+          char: '$c1',
+          action: 'st',
+          target: '$c2',
+          time: '$t1',
+        },
+        {
+          char: '$c1',
+          wpn: '$wpn1',
+          time: '$t2',
+        },
+        {
+          wpn: '$wpn1',
+          canSt: true,
+          canBlunt: false,
+        }
+      ],
+      lhsNot: [
+        {
+          char: '$c2',
+          action: 'dgd',
+          target: '$c1',
+          time: '$t3',
+        }
+      ],
+      rhs: [
+        {
+          char: '$c2',
+          sted: true,
+          time: '$t4',
+        }
+      ],
+      argChecks: {
+
+      },
+      argDeterm: {
+
+      }
+    }
+  ],
+}
+
 module.exports = {
   wrd1,
 }

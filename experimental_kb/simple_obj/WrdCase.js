@@ -15,7 +15,7 @@ class WrdCase {
     // instantiate gRules for the curr avail facts, add instances to rules
     this.wrd.gRules.forEach(gRule => {
       let grInstances = this.controller.forwardSub(gRule, this.facts);
-      this.rules = mu.concatNoRepeat(this.rules, grInstances)
+      this.rules = mu.concatNoRepeatByStringify(this.rules, grInstances)
     })
     // inference with this.rules
     this.rules.forEach(rule => {
