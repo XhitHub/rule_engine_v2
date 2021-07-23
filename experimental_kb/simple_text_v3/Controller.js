@@ -1,3 +1,4 @@
+const Diff = require('diff');
 // var mu = require.main.require('./myUtil');
 var mu = require('../../myUtil');
 
@@ -14,6 +15,61 @@ class Controller{
   forwardSub(gRule, aFacts) {
     // aFacts: availableFacts
 
+  }
+
+  _isArg(val) {
+    // check if val is of format '$xxx'
+    // return this.argRegex.test(val)
+    return /\$.+/.test(val)
+  }
+
+  _getArgName(searchFormArgName) {
+    return searchFormArgName.replace('$','');
+  }
+
+  _matchByDiff(gFact, aFact) {
+    var diff = Diff.diffWords(gFact, aFact);
+    let currArg = null;
+    let currArgVal = null;
+    let isFindingSub = false;
+    let argSubMap = {}
+    // diff.forEach(d => {
+    for (var i=0; i<diff.length; i++) {
+      let d = diff[i]
+      if (d.removed) {
+        if (this._isArg(d.value)) {
+          // is handling new arg
+          // save last arg to argSubMap if there is last Arg
+          if (currArg != null) {
+            argSubMap[currArg] = currArgVal
+          }
+          currArg = this._getArgName(d.value)
+          // refresh currArgVal
+          currArgVal = ''
+          isFindingSub = true
+        }
+      } else {
+        if (d.added) {
+          // add to currArgVal
+          currArgVal += d.value
+        } else {
+          // whether add or not depends on whether next d is arg or not.
+          if (i+1 < diff.length) {
+            let d2 = diff[i+1]
+            // add if d2 is not arg
+            if (!(d2.removed && this._isArg(d2.value))) {
+              // add to currArgVal
+              currArgVal += d.value
+            }
+          }
+        }
+      }
+    }
+    // handle last arg
+    if (currArg != null) {
+      argSubMap[currArg] = currArgVal
+    }
+    console.log("Controller -> _matchByDiff -> argSubMap", argSubMap)
   }
 
   // fact of simple text v3
