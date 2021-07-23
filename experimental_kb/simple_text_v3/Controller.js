@@ -23,6 +23,11 @@ class Controller{
     // beware of potential async
     this._forwardSubRecursive(initialSubRes, availFacts, finishedSubResList);
     console.log("Controller -> forwardSub -> finishedSubResList", finishedSubResList)
+    let instances = finishedSubResList.map(subRes => {
+      return this.subGRule(subRes.gRule, subRes.argSubMap)
+    })
+    console.log("Controller -> forwardSub -> instances", instances)
+    return instances
   }
 
   _isArg(val) {
@@ -108,6 +113,7 @@ class Controller{
   }
 
   // fact of simple text v3. return subRes2 if can match
+  // TODO: handle lhsNot
   _tryMatchFact(gFact, aFact, subRes) {
     // sub gFact with settled args first
     gFact = this._subGFact(gFact, subRes.argSubMap)
@@ -187,6 +193,24 @@ class Controller{
       // this gRule has gFact (the gFact being processed in curr step) in xhs that cannot match any avail facts, thus should stop any further subbing on this gRule
       return;
     }
+  }
+
+  subGRule(gRule, argSubMap) {
+    // let {gRule, argSubMap} = subRes
+    // determ undetermined args
+    Object.keys(gRule.argDeterm).forEach(k => {
+      if (argSubMap[k] == undefined) {
+        // is undetermined arg to be subbed
+        argSubMap[k] = gRule.argDeterm[k](argSubMap)
+      }
+    })
+    let lhs = gRule.lhs.map(gF => this._subGFact(gF, argSubMap))
+    let rhs = gRule.rhs.map(gF => this._subGFact(gF, argSubMap))
+    let res = {
+      lhs,
+      rhs
+    }
+    return res
   }
 }
 
