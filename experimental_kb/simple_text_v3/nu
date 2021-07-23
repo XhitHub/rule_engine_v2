@@ -90,3 +90,24 @@ argConstraints: args => (
           func: args => args["t2"] >= args["t1"],
         }
       ],
+
+
+
+      // check if subs are valid
+
+      // "$c1 st $c2 at $t1" '.+ st .+ at .+'
+      /*
+      for each arg
+        find surrounding: '$c1 st '
+        sSurr: '.+ st '
+        find in aFact:
+          'char1 st '
+        replace non arg parts by ''
+          'char1'
+        the arg = 'char1'
+      problems:
+        if there are connected args, e.g. "$c1 $c2 $c3 are in group $g1", won't be able to determine which pt is which arg.
+        the search mechanism is not robust enough.
+      */
+      // let args = gFact.
+      

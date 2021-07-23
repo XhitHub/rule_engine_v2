@@ -63,7 +63,13 @@ var diff = Diff.diffWordsWithSpace(s1, s5);
 console.log("diff", diff)
 
 var c = new Controller()
-c._matchByDiff(s1,s2)
-c._matchByDiff(s1,s5)
-c._matchByDiff(s3,s4)
-c._matchByDiff(s7,s8)
+c._matchByDiff(s1,s2, {argSubMap: {}})
+c._matchByDiff(s1,s5, {argSubMap: {}})
+c._matchByDiff(s3,s4, {argSubMap: {}})
+c._matchByDiff(s7,s8, {argSubMap: {}})
+
+
+// t5
+const gRules = wrds.wrdDfc3.gRules
+const facts = kn.facts
+c.forwardSub(gRules[0], facts)

@@ -2,7 +2,7 @@ const Diff = require('diff');
 // var mu = require.main.require('./myUtil');
 var mu = require('../../myUtil');
 
-const argRegex = /\$[\w\d]+/;
+const argRegex = /\$[\w\d]+/g;
 const searchFormReplacement = '.+'
 
 class Controller{
@@ -12,9 +12,17 @@ class Controller{
     // this.searchFormReplacement = '.+'
   }
 
-  forwardSub(gRule, aFacts) {
+  forwardSub(gRule, availFacts) {
     // aFacts: availableFacts
-
+    let finishedSubResList = []
+    let initialSubRes = {
+      argSubMap: {},
+      gRule: gRule,
+      remainingGFacts: mu.deepClone(gRule.lhs),
+    }
+    // beware of potential async
+    this._forwardSubRecursive(initialSubRes, availFacts, finishedSubResList);
+    console.log("Controller -> forwardSub -> finishedSubResList", finishedSubResList)
   }
 
   _isArg(val) {
@@ -27,12 +35,32 @@ class Controller{
     return searchFormArgName.replace('$','');
   }
 
-  _matchByDiff(gFact, aFact) {
+  _subGFact(gFact, argSubMap) {
+    Object.keys(argSubMap).forEach(k => {
+      gFact = gFact.replace('$' + k, argSubMap[k])
+    })
+    return gFact
+  }
+
+  _fixArgVal(argVal) {
+    // remove trailing space
+    if (argVal[argVal.length - 1] == ' ') {
+      argVal = argVal.substring(0, argVal.length - 1)
+    }
+    // handle numbers
+    if (!isNaN(argVal)) {
+      argVal = Number(argVal)
+    }
+    return argVal
+  }
+
+  // sub and modify subRes in-place
+  _matchByDiff(gFact, aFact, subRes) {
     var diff = Diff.diffWords(gFact, aFact);
     let currArg = null;
     let currArgVal = null;
     let isFindingSub = false;
-    let argSubMap = {}
+    let argSubMap = subRes.argSubMap
     // diff.forEach(d => {
     for (var i=0; i<diff.length; i++) {
       let d = diff[i]
@@ -41,7 +69,7 @@ class Controller{
           // is handling new arg
           // save last arg to argSubMap if there is last Arg
           if (currArg != null) {
-            argSubMap[currArg] = currArgVal
+            argSubMap[currArg] = this._fixArgVal(currArgVal)
           }
           currArg = this._getArgName(d.value)
           // refresh currArgVal
@@ -58,6 +86,7 @@ class Controller{
             let d2 = diff[i+1]
             // add if d2 is not arg
             if (!(d2.removed && this._isArg(d2.value))) {
+              console.log("Controller -> _matchByDiff -> d2", d2)
               // add to currArgVal
               currArgVal += d.value
             }
@@ -67,37 +96,57 @@ class Controller{
     }
     // handle last arg
     if (currArg != null) {
-      argSubMap[currArg] = currArgVal
+      argSubMap[currArg] = this._fixArgVal(currArgVal)
     }
-    console.log("Controller -> _matchByDiff -> argSubMap", argSubMap)
+    // console.log("Controller -> _matchByDiff -> subRes.argSubMap", subRes.argSubMap)
+    // check if all subbed and is correct sub
+    let gFact2 = this._subGFact(gFact, subRes.argSubMap)
+    // console.log("Controller -> _matchByDiff -> aFact", aFact)
+    // console.log("Controller -> _matchByDiff -> gFact2", gFact2)
+    console.log("Controller -> _matchByDiff -> gFact2 == aFact", gFact2 == aFact)
+    return (gFact2 == aFact)
   }
 
-  // fact of simple text v3
+  // fact of simple text v3. return subRes2 if can match
   _tryMatchFact(gFact, aFact, subRes) {
     // sub gFact with settled args first
-    Object.keys(subRes.argSubMap).forEach(k => {
-      gFact = gFact.replace(k, argSubMap[k])
-    })
+    gFact = this._subGFact(gFact, subRes.argSubMap)
     // obtain gFact search form for remaining args
     let sGFact = gFact.replace(argRegex, searchFormReplacement)
     let sGFactRegex = new RegExp(sGFact, 'g');
     let possToMatch = sGFactRegex.test(aFact)
+    console.log("Controller -> _tryMatchFact -> sGFact", sGFact)
+    console.log("Controller -> _tryMatchFact -> aFact", aFact)
+    console.log("Controller -> _tryMatchFact -> possToMatch", possToMatch)
     if (possToMatch) {
-      // "$c1 st $c2 at $t1" '.+ st .+ at .+'
-      /*
-      for each arg
-        find surrounding: '$c1 st '
-        sSurr: '.+ st '
-        find in aFact:
-          'char1 st '
-        replace non arg parts by ''
-          'char1'
-        the arg = 'char1'
-      problems:
-        if there are connected args, e.g. "$c1 $c2 $c3 are in group $g1", won't be able to determine which pt is which arg.
-        the search mechanism is not robust enough.
-      */
-      // let args = gFact.
+      let argSubMap2 = mu.deepClone(subRes.argSubMap)
+      let subRes2 = {
+        argSubMap: argSubMap2,
+        gRule: subRes.gRule,
+        remainingGFacts: mu.deepClone(subRes.remainingGFacts),
+      }
+      let canMatch = this._matchByDiff(gFact, aFact, subRes2)
+      if (canMatch) {
+        // still need to check if arg constraints are fullfilled
+        let argCheckPass = true
+        subRes2.gRule.argChecks.forEach(argCheck => {
+          console.log("Controller -> _tryMatchFact -> argCheck", argCheck)
+          if (!argCheck(subRes2.argSubMap)) {
+            console.log("Controller -> _tryMatchFact -> subRes2.argSubMap", subRes2.argSubMap)
+            argCheckPass = false
+            console.log("Controller -> _tryMatchFact -> argCheckPass", argCheckPass)
+          }
+        })
+        if (argCheckPass) {
+          // all pass, can proceed
+          return subRes2
+        } else {
+          return null
+        }
+      } else {
+        // cannot match
+        return null
+      }
     } else {
       // impossible to match, end
       return null
@@ -108,6 +157,7 @@ class Controller{
     // other than subbing with the 1st matched aFact, also need to go through remaining aFacts for other valid subbings
     // extract parts that are diff between fact obj form and fact text form
     
+    console.log("Controller -> _forwardSubRecursive -> subRes.remainingGFacts", subRes.remainingGFacts)
     // if there is no more remaining gFacts left, the recursion is finished
     if (subRes.remainingGFacts.length == 0) {
       // this is a finished subRes where all gFacts in lhs is subbed successfully. add this to final res list and end recursion
@@ -125,9 +175,11 @@ class Controller{
         subRes2List.push(subRes2)
       }
     })
+    console.log("Controller -> _forwardSubRecursive -> subRes2List", subRes2List)
     if (subRes2List.length > 0) {
       // recursively move on process
       subRes2List.forEach(sr2 => {
+        console.log("Controller -> _forwardSubRecursive -> sr2", sr2)
         // move on to process the next lhs gFact
         this._forwardSubRecursive(sr2, availFacts, finishedSubResList)
       })

@@ -19,9 +19,9 @@ const wrdDfc3 = {
         "$c2 is sted at $t4",
       ],
       argChecks: [
-        args => ad(args, ['t1','t2']) && (args["t2"] >= args["t1"]),
-        args => ad(args, ['t1','t3']) && (args["t3"] <= args["t1"]),
-        args => ad(args, ['t1','t4']) && (args["t4"] >= args["t1"]),
+        args => !ad(args, ['t1','t2']) || (args["t2"] <= args["t1"]),
+        args => !ad(args, ['t1','t3']) || (args["t3"] <= args["t1"]),
+        args => !ad(args, ['t1','t4']) || (args["t4"] >= args["t1"]),
       ],
       argDeterm: {
         t4: args => args["t1"] + 1,
