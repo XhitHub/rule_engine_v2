@@ -12,24 +12,8 @@ class Controller{
     // this.searchFormReplacement = '.+'
   }
 
-  forwardSubLogged(gRule, availFacts, forwardInferenceRes) {
-    let gRuleSubbedInstances = this.forwardSub(gRule, availFacts)
-    this.forwardInferenceRes = forwardInferenceRes
-    // use gRuleInstantiations
-    forwardInferenceRes.gRuleInstantiations = forwardInferenceRes.gRuleInstantiations.concat(gRuleSubbedInstances)
-    // // use forwardInferences
-    // let fis = gRuleSubbedInstances.map(grsi => ({
-    //   rule: gRuleSubbedInstances.map(grsi => this.getSimpleGRuleInstance(grsi)),
-    //   factsUsed: grsi.lhs,
-    //   factsInferenced: grsi.rhs,
-    // }))
-    // forwardInferenceRes.forwardInferences = forwardInferenceRes.forwardInferences.concat(fis)
-    return gRuleSubbedInstances
-  }
-
   // if all forward sub instantiated rule instances are only instantiated if they are T, in inference(), can directly add instances rhs to availFacts
   // unless argSubMap is placed in instance obj, argSubMap is only accessible here, then lhsNOTs needs to be handled here
-  // some args cannot be subbed until gRule is being used on facts, thus cannot fully instantiate the gRule. instead, fully check if gRule can be fired inside forwardSub.
   forwardSub(gRule, availFacts) {
     // aFacts: availableFacts
     let finishedSubResList = []
@@ -268,11 +252,9 @@ class Controller{
       }
     })
     let lhs = gRule.lhs.map(gF => this._subGFact(gF, argSubMap))
-    let lhsNot = gRule.lhsNot.map(gF => this._subGFact(gF, argSubMap))
     let rhs = gRule.rhs.map(gF => this._subGFact(gF, argSubMap))
     let res = {
       lhs,
-      lhsNot,
       rhs,
       // include subbing info?
       gRule,
@@ -281,36 +263,15 @@ class Controller{
     return res
   }
 
-  getForwardInferenceRes(factsBeforeInference) {
-    var forwardInferenceRes = {
-      factsBeforeInference,
-      factsAfterInference: [],
-      forwardInferences: [],
-      gRuleInstantiations: [],
-      contradictions: [],
-    }
-    return forwardInferenceRes
-  }
-
-  getSimpleGRule(gRule) {
+  visualizeGRule(gRule) {
     let tempGRule = {
       id: gRule.id,
       lhs: gRule.lhs,
       lhsNot: gRule.lhsNot,
       rhs: gRule.rhs,
     }
-    return tempGRule
-  }
-
-  getSimpleGRuleInstance(rule) {
-    let tempRule = {
-      lhs: rule.lhs,
-      lhsNot: rule.lhsNot,
-      rhs: rule.rhs,
-      gRule: this.getSimpleGRule(rule.gRule),
-      argSubMap: rule.argSubMap,
-    }
-    return tempRule;
+    let vGRule = JSON.stringify(tempGRule, ' ', 2)
+    return vGRule
   }
 }
 

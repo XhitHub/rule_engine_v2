@@ -74,9 +74,20 @@ const concatNoRepeat = (arr1, arr2) => {
   return arr3
 }
 
+const concatStringArrsNoRepeat = (arr1, arr2) => {
+  let arr3 = [].concat(arr1)
+  arr2.forEach(a2O => {
+    if (!arr3.find(a2O)) {
+      arr3.push(a2O)
+    }
+  })
+  return arr3
+}
+
 module.exports = {
   deepClone,
   allDefined,
   concatNoRepeat,
+  concatStringArrsNoRepeat,
   concatNoRepeatByStringify,
 }

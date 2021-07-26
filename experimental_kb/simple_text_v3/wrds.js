@@ -7,16 +7,18 @@ const wrdDfc3 = {
   rules: [],
   gRules: [
     {
+      // id is used for reference when checking inference results
+      id: 1,
       lhs: [
-        "$c1 st $c2 at $t1",
+        "$c1 action1 $c2 at $t1",
         "$c1 has $wpn1 at $t2",
-        "$wpn1 can st",
+        "$wpn1 can action1",
       ],
       lhsNot: [
-        "$c2 dgd $c1 at $t3",
+        "$c2 action2 $c1 at $t3",
       ],
       rhs: [
-        "$c2 is sted at $t4",
+        "$c2 is action1ed at $t4",
       ],
       argChecks: [
         args => !ad(args, ['t1','t2']) || (args["t2"] <= args["t1"]),

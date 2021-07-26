@@ -176,3 +176,95 @@ argConstraints: args => (
             console.log("Controller -> _tryMatchFact -> argCheckPass", argCheckPass)
           }
         })
+
+isFactTrue(fact, availFacts) {
+
+  }
+
+  // return new facts. more consistent with gRule instantiation
+  forward(rule, availFacts) {
+    let canFire = true;
+    rule.lhs.forEach(fact => {
+      if (!this.isFactTrue(fact, availFacts)) {
+        // at least 1 fact in xhs is false, cannot fire
+        canFire = false;
+      }
+    })
+    rule.lhsNot.forEach(nFact => {
+      if (this.isFactTrue(nFact, availFacts)) {
+        // at least 1 fact in lhsNot is true, cannot fire
+        canFire = false;
+      }
+    })
+    if (canFire) {
+      // potentially have redundant facts in availFacts. can have [clear redundant fact] regularly to resolve the issue?
+      return rule.rhs;
+    } else {
+      return []
+    }
+    // return canFire
+  }
+
+  
+
+  isFactTrue(fact, availFacts) {
+
+  }
+
+  // return new facts. more consistent with gRule instantiation
+  forward(rule, availFacts) {
+    let canFire = true;
+    rule.lhs.forEach(fact => {
+      if (!this.isFactTrue(fact, availFacts)) {
+        // at least 1 fact in xhs is false, cannot fire
+        canFire = false;
+      }
+    })
+    rule.lhsNot.forEach(nFact => {
+      if (this.isFactTrue(nFact, availFacts)) {
+        // at least 1 fact in lhsNot is true, cannot fire
+        canFire = false;
+      }
+    })
+    if (canFire) {
+      // potentially have redundant facts in availFacts. can have [clear redundant fact] regularly to resolve the issue?
+      return rule.rhs;
+    } else {
+      return []
+    }
+    // return canFire
+  }
+
+
+  visualizeGRule(gRule) {
+    let tempGRule = {
+      id: gRule.id,
+      lhs: gRule.lhs,
+      lhsNot: gRule.lhsNot,
+      rhs: gRule.rhs,
+    }
+    let vGRule = JSON.stringify(tempGRule, ' ', 2)
+    return vGRule
+  }
+
+
+
+  // should not double instantiate. can by duplicate clearing
+  // should not have double firing. sol: add fired = true flag to fired rules?
+  forward() {
+    let fRes = this.controller.getForwardInferenceRes(mu.deepClone(this.facts))
+    // instantiate gRules for the curr avail facts, add instances to rules
+    this.wrd.gRules.forEach(gRule => {
+      let grInstances = this.controller.forwardSubLogged(gRule, this.facts, fRes);
+      this.rules = mu.concatNoRepeatByStringify(this.rules, grInstances)
+    })
+    // inference with this.rules
+    this.rules.forEach(rule => {
+      // the rules are already been checked to be passing lhsNot in forwardSub
+      // let newFacts = this.controller.forward(rule, this.facts)
+      this.facts = mu.concatNoRepeat(this.facts, rule.rhs)
+    })
+
+    fRes.factsAfterInference = mu.deepClone(this.facts)
+    this.forwardInferenceResults.push(fRes)
+  }

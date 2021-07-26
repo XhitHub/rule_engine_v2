@@ -60,40 +60,46 @@ using gRules
   data structure for gRule sub res?
 */
 const facts = [
-  "char1 st char2 at 0",
-  "char1 has swd at -1",
-  "swd can st",
+  "char1 action1 char2 at 0",
+  "char1 has item1 at -1",
+  "item1 can action1",
   // set 2
-  "char1 st char2 at 10",
-  "char1 has kn at -11",
-  "kn can st",
+  "char1 action1 char2 at 10",
+  "char1 has item2 at -11",
+  "item2 can action1",
   // test NOTs
-  "char2 dgd char1 at 5",
+  "char2 action2 char1 at 5",
 ]
 
 const gRules = [
-  // {
-  //   lhs: [
-  //     "$c1 st $c2 at $t1",
-  //     "$c1 has $wpn1 at $t2",
-  //     "$wpn1 can st",
-  //   ],
-  //   lhsNot: [
-  //     "$c2 dgd $c1 at $t3",
-  //   ],
-  //   rhs: [
-  //     "$c2 is sted at $t4",
-  //   ],
-  //   argChecks: [
-  //     args => ad(args, ['t1','t2']) && (args["t2"] >= args["t1"]),
-  //     args => ad(args, ['t1','t3']) && (args["t3"] <= args["t1"]),
-  //     args => ad(args, ['t1','t4']) && (args["t4"] >= args["t1"]),
-  //   ],
-  //   argDeterm: {
-  //     t4: args => args["t1"] + 1,
-  //   }
-  // }
 ]
+
+// data structure for forward inference results:
+const forwardInferenceRes = {
+  factsBeforeInference: [],
+  factsAfterInference: [],
+  forwardInferences: [
+    {
+      rule: {},
+      factsUsed: [],  //is lhs of rule
+      factsInferenced: [],
+    }
+  ],
+  // gRuleInstantiations will be included in forward inferences in fact, if rule as gRule instance includes instantiation info. But having instantiation history can help check if there are unused instances?
+  gRuleInstantiations: [
+
+  ],
+  checkNotsFails: [
+    {
+      gRule: {},
+      
+    }
+  ],
+  // report contradictions and request for priority clarification?
+  contradictions: [
+    
+  ]
+}
 
 module.exports = {
   facts,
