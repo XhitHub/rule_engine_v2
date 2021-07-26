@@ -63,6 +63,12 @@ const facts = [
   "char1 st char2 at 0",
   "char1 has swd at -1",
   "swd can st",
+  // set 2
+  "char1 st char2 at 10",
+  "char1 has kn at -11",
+  "kn can st",
+  // test NOTs
+  "char2 dgd char1 at 5",
 ]
 
 const gRules = [

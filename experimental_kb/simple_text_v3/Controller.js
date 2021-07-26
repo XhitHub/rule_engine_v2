@@ -12,6 +12,8 @@ class Controller{
     // this.searchFormReplacement = '.+'
   }
 
+  // if all forward sub instantiated rule instances are only instantiated if they are T, in inference(), can directly add instances rhs to availFacts
+  // unless argSubMap is placed in instance obj, argSubMap is only accessible here, then lhsNOTs needs to be handled here
   forwardSub(gRule, availFacts) {
     // aFacts: availableFacts
     let finishedSubResList = []
@@ -23,11 +25,29 @@ class Controller{
     // beware of potential async
     this._forwardSubRecursive(initialSubRes, availFacts, finishedSubResList);
     console.log("Controller -> forwardSub -> finishedSubResList", finishedSubResList)
+    
     let instances = finishedSubResList.map(subRes => {
       return this.subGRule(subRes.gRule, subRes.argSubMap)
     })
     console.log("Controller -> forwardSub -> instances", instances)
-    return instances
+
+    // need all gFacts in lhsNOTs to pass notCheck in order to pass check NOTs
+    let instancesPassingCheckNOTs = []
+    instances.forEach(rule => {
+      let passAllCheckNOTs = true;
+      rule.gRule.lhsNot.forEach(ngFact => {
+        let passCheckNOT = this._checkNots(ngFact, availFacts, rule.argSubMap, rule.gRule)
+        if (!passCheckNOT) {
+          passAllCheckNOTs = false
+        }
+      })
+      if (passAllCheckNOTs) {
+        instancesPassingCheckNOTs.push(rule)
+      }
+    })
+
+    console.log("Controller -> forwardSub -> instancesPassingCheckNOTs", instancesPassingCheckNOTs)
+    return instancesPassingCheckNOTs
   }
 
   _isArg(val) {
@@ -38,6 +58,32 @@ class Controller{
 
   _getArgName(searchFormArgName) {
     return searchFormArgName.replace('$','');
+  }
+
+  _checkNots(ngFact, aFacts, argSubMap, gRule) {
+    // ngFact: gFact in NOTs, aFacts: availFacts
+    // some parts of ngFact
+    ngFact = this._subGFact(ngFact, argSubMap)
+    console.log("Controller -> _checkNots -> argSubMap", argSubMap)
+    console.log("Controller -> _checkNots -> ngFact", ngFact)
+    let atLeast1Match = false
+    aFacts.forEach(aFact => {
+      // clone argSubMap to avoid over-subbed by prev iterations
+      let argSubMap2 = mu.deepClone(argSubMap)
+      let canMatch = this._matchByDiff(ngFact, aFact, argSubMap2)
+      // the sub need to pass arg checks too. check with most subbed argSubMap
+      let passArgCheck = this._argCheck(gRule, argSubMap2)
+      if (canMatch && passArgCheck) {
+        atLeast1Match = true
+      }
+      // debug
+      if (canMatch && !passArgCheck) {
+        console.log("_checkNots cannot pass arg checks")
+        console.log("Controller -> _checkNots -> argSubMap2", argSubMap2)
+      }
+    })
+    // if there is at least 1 match, it fails to pass [check NOTs]
+    return !atLeast1Match
   }
 
   _subGFact(gFact, argSubMap) {
@@ -59,13 +105,23 @@ class Controller{
     return argVal
   }
 
-  // sub and modify subRes in-place
-  _matchByDiff(gFact, aFact, subRes) {
+  _argCheck(gRule, argSubMap) {
+    let argCheckPass = true
+    gRule.argChecks.forEach(argCheck => {
+      if (!argCheck(argSubMap)) {
+        argCheckPass = false
+      }
+    })
+    return argCheckPass
+  }
+
+  // sub and modify argSubMap in-place, return bool of [can match or not]
+  _matchByDiff(gFact, aFact, argSubMap) {
     var diff = Diff.diffWords(gFact, aFact);
     let currArg = null;
     let currArgVal = null;
     let isFindingSub = false;
-    let argSubMap = subRes.argSubMap
+    // let argSubMap = argSubMap
     // diff.forEach(d => {
     for (var i=0; i<diff.length; i++) {
       let d = diff[i]
@@ -103,11 +159,10 @@ class Controller{
     if (currArg != null) {
       argSubMap[currArg] = this._fixArgVal(currArgVal)
     }
-    // console.log("Controller -> _matchByDiff -> subRes.argSubMap", subRes.argSubMap)
     // check if all subbed and is correct sub
-    let gFact2 = this._subGFact(gFact, subRes.argSubMap)
-    // console.log("Controller -> _matchByDiff -> aFact", aFact)
-    // console.log("Controller -> _matchByDiff -> gFact2", gFact2)
+    let gFact2 = this._subGFact(gFact, argSubMap)
+    console.log("Controller -> _matchByDiff -> aFact", aFact)
+    console.log("Controller -> _matchByDiff -> gFact2", gFact2)
     console.log("Controller -> _matchByDiff -> gFact2 == aFact", gFact2 == aFact)
     return (gFact2 == aFact)
   }
@@ -131,18 +186,10 @@ class Controller{
         gRule: subRes.gRule,
         remainingGFacts: mu.deepClone(subRes.remainingGFacts),
       }
-      let canMatch = this._matchByDiff(gFact, aFact, subRes2)
+      let canMatch = this._matchByDiff(gFact, aFact, subRes2.argSubMap)
       if (canMatch) {
         // still need to check if arg constraints are fullfilled
-        let argCheckPass = true
-        subRes2.gRule.argChecks.forEach(argCheck => {
-          console.log("Controller -> _tryMatchFact -> argCheck", argCheck)
-          if (!argCheck(subRes2.argSubMap)) {
-            console.log("Controller -> _tryMatchFact -> subRes2.argSubMap", subRes2.argSubMap)
-            argCheckPass = false
-            console.log("Controller -> _tryMatchFact -> argCheckPass", argCheckPass)
-          }
-        })
+        let argCheckPass = this._argCheck(subRes2.gRule, subRes2.argSubMap)
         if (argCheckPass) {
           // all pass, can proceed
           return subRes2
@@ -208,7 +255,10 @@ class Controller{
     let rhs = gRule.rhs.map(gF => this._subGFact(gF, argSubMap))
     let res = {
       lhs,
-      rhs
+      rhs,
+      // include subbing info?
+      gRule,
+      argSubMap,
     }
     return res
   }

@@ -229,6 +229,17 @@ const gRuleSubRes1 = {
   gRule: null,
   // remaining gFacts in searchForm lhs?
   remainingGFacts: [],
+  // remaining gFacts for lhsNOT?
+  /*
+  how should lhsNOTs be handled:
+    need none of them [ can be correctly subbed and match any aFact ]
+    no need to depend on other lhsNOT facts, as unlike in lhs where all being T is needed, only checking individually is needed
+      then can check in 1 go after all lhs is settled, no need to handle recursively 
+    but need to depend on argSubMap
+    requirements of lhsNOTs:
+      there are no any valid subs that is T/found in aFacts?
+  */
+  // remainingNotGFacts: [],
 }
 
 const wrd = {

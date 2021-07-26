@@ -110,4 +110,69 @@ argConstraints: args => (
         the search mechanism is not robust enough.
       */
       // let args = gFact.
-      
+
+
+
+// sub and modify subRes in-place, return bool of [can match or not]
+  _matchByDiff(gFact, aFact, subRes) {
+    var diff = Diff.diffWords(gFact, aFact);
+    let currArg = null;
+    let currArgVal = null;
+    let isFindingSub = false;
+    let argSubMap = subRes.argSubMap
+    // diff.forEach(d => {
+    for (var i=0; i<diff.length; i++) {
+      let d = diff[i]
+      if (d.removed) {
+        if (this._isArg(d.value)) {
+          // is handling new arg
+          // save last arg to argSubMap if there is last Arg
+          if (currArg != null) {
+            argSubMap[currArg] = this._fixArgVal(currArgVal)
+          }
+          currArg = this._getArgName(d.value)
+          // refresh currArgVal
+          currArgVal = ''
+          isFindingSub = true
+        }
+      } else {
+        if (d.added) {
+          // add to currArgVal
+          currArgVal += d.value
+        } else {
+          // whether add or not depends on whether next d is arg or not.
+          if (i+1 < diff.length) {
+            let d2 = diff[i+1]
+            // add if d2 is not arg
+            if (!(d2.removed && this._isArg(d2.value))) {
+              console.log("Controller -> _matchByDiff -> d2", d2)
+              // add to currArgVal
+              currArgVal += d.value
+            }
+          }
+        }
+      }
+    }
+    // handle last arg
+    if (currArg != null) {
+      argSubMap[currArg] = this._fixArgVal(currArgVal)
+    }
+    // check if all subbed and is correct sub
+    let gFact2 = this._subGFact(gFact, subRes.argSubMap)
+    // console.log("Controller -> _matchByDiff -> aFact", aFact)
+    // console.log("Controller -> _matchByDiff -> gFact2", gFact2)
+    console.log("Controller -> _matchByDiff -> gFact2 == aFact", gFact2 == aFact)
+    return (gFact2 == aFact)
+  }
+
+
+  // still need to check if arg constraints are fullfilled
+        let argCheckPass = true
+        subRes2.gRule.argChecks.forEach(argCheck => {
+          console.log("Controller -> _tryMatchFact -> argCheck", argCheck)
+          if (!argCheck(subRes2.argSubMap)) {
+            console.log("Controller -> _tryMatchFact -> subRes2.argSubMap", subRes2.argSubMap)
+            argCheckPass = false
+            console.log("Controller -> _tryMatchFact -> argCheckPass", argCheckPass)
+          }
+        })
