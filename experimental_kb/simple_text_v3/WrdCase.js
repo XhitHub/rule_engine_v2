@@ -25,11 +25,16 @@ class WrdCase {
     this.rulesInstantiated.forEach(rule => {
       // the rules are already been checked to be passing lhsNot in forwardSub
       // let newFacts = this.controller.forward(rule, this.facts)
-      this.facts = mu.concatNoRepeat(this.facts, rule.rhs)
+      // this.facts = mu.concatNoRepeat(this.facts, rule.rhs)
+      this.addFacts(rule.rhs)
     })
 
     fRes.factsAfterInference = mu.deepClone(this.facts)
     this.forwardInferenceResults.push(fRes)
+  }
+
+  addFacts(facts) {
+    this.facts = mu.concatNoRepeat(this.facts, facts)
   }
 }
 

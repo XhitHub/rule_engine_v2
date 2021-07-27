@@ -74,9 +74,22 @@ try{
 // const facts = kn.facts
 // c.forwardSub(gRules[0], facts)
 
-// t6
-var {gRules, facts} = kn;
-const wc1 = new WrdCase(wrds.wrdDfc3, facts)
+// // t6
+// var {gRules, facts} = kn;
+// const wc1 = new WrdCase(wrds.wrdDfc3, facts)
+// wc1.forward()
+// // console.log("wc1", wc1)
+// console.log("wc1 forwardInferenceResults", JSON.stringify(wc1.forwardInferenceResults, ' ', 2))
+
+// t7
+const facts = [
+  'at time 0, char1 is in room1',
+  'at time 0, char2 is in room2',
+  'room1 is connected to room2',
+  'room1 is connected to room3',
+  'room1 is connected to room4',
+  'there is door1 between room1 and room4',
+]
+const wc1 = new WrdCase(wrds.wrdDfc4, facts)
 wc1.forward()
-// console.log("wc1", wc1)
 console.log("wc1 forwardInferenceResults", JSON.stringify(wc1.forwardInferenceResults, ' ', 2))

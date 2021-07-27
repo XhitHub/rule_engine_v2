@@ -31,6 +31,8 @@ class Controller{
   // unless argSubMap is placed in instance obj, argSubMap is only accessible here, then lhsNOTs needs to be handled here
   // some args cannot be subbed until gRule is being used on facts, thus cannot fully instantiate the gRule. instead, fully check if gRule can be fired inside forwardSub.
   forwardSub(gRule, availFacts) {
+    // fill omitted fields
+    this._fillOmittedGRuleFields(gRule)
     // aFacts: availableFacts
     let finishedSubResList = []
     let initialSubRes = {
@@ -64,6 +66,19 @@ class Controller{
 
     console.log("Controller -> forwardSub -> instancesPassingCheckNOTs", instancesPassingCheckNOTs)
     return instancesPassingCheckNOTs
+  }
+
+  // fill omitted fields in-place
+  _fillOmittedGRuleFields(gRule) {
+    if (gRule.lhsNot == undefined) {
+      gRule.lhsNot = []
+    }
+    if (gRule.argChecks == undefined) {
+      gRule.argChecks = []
+    }
+    if (gRule.argDeterm == undefined) {
+      gRule.argDeterm = {}
+    }
   }
 
   _isArg(val) {
@@ -123,11 +138,14 @@ class Controller{
 
   _argCheck(gRule, argSubMap) {
     let argCheckPass = true
-    gRule.argChecks.forEach(argCheck => {
-      if (!argCheck(argSubMap)) {
-        argCheckPass = false
-      }
-    })
+    // if no argChecks, return true
+    if (gRule.argChecks != undefined) {
+      gRule.argChecks.forEach(argCheck => {
+        if (!argCheck(argSubMap)) {
+          argCheckPass = false
+        }
+      })
+    }
     return argCheckPass
   }
 
@@ -260,13 +278,15 @@ class Controller{
 
   subGRule(gRule, argSubMap) {
     // let {gRule, argSubMap} = subRes
-    // determ undetermined args
-    Object.keys(gRule.argDeterm).forEach(k => {
-      if (argSubMap[k] == undefined) {
-        // is undetermined arg to be subbed
-        argSubMap[k] = gRule.argDeterm[k](argSubMap)
-      }
-    })
+    // determ undetermined args, if there is argDeterm
+    if (gRule.argDeterm != undefined) {
+      Object.keys(gRule.argDeterm).forEach(k => {
+        if (argSubMap[k] == undefined) {
+          // is undetermined arg to be subbed
+          argSubMap[k] = gRule.argDeterm[k](argSubMap)
+        }
+      })
+    }
     let lhs = gRule.lhs.map(gF => this._subGFact(gF, argSubMap))
     let lhsNot = gRule.lhsNot.map(gF => this._subGFact(gF, argSubMap))
     let rhs = gRule.rhs.map(gF => this._subGFact(gF, argSubMap))
