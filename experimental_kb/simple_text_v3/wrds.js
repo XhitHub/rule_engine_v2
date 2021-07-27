@@ -38,6 +38,16 @@ const wrdDfc4 = {
   facts: [],
   rules: [],
   gRules: [
+    //lang translators
+    {
+      lhs: [
+        '$content at time $t'
+      ],
+      rhs: [
+        'at time $t, $content'
+      ]
+    },
+    //fict rules
     {
       id: 1,
       lhs: [
@@ -107,10 +117,21 @@ const wrdDfc4 = {
       ],
       rhs: [
         'at time $t1, $c1 can: fgt $c2',
+      ],
+      argChecks: [
+        args => !ad(args, ['c1','c2']) || (args["c1"] != args["c2"]),
       ]
     }
   ],
 }
+/*
+how to handle continuous facts?
+curr moment system:
+  some rules operates with curr facts: they will have time being "at time curr" instead of at time integer val
+  there is fact of curr time == integer val which will be progressing each turn
+  inference non curr time version of the fact (int time version) with the curr time int val
+    rules that works on non curr time will use these facts
+*/
 
 module.exports = {
   wrdDfc3,

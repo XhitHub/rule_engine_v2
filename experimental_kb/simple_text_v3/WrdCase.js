@@ -33,6 +33,18 @@ class WrdCase {
     this.forwardInferenceResults.push(fRes)
   }
 
+  forwardUntilNoChanges(maxIterations) {
+    let keepGoing = true
+    let count = 0
+    while(keepGoing) {
+      let factsCount1 = this.facts.length
+      this.forward()
+      let factsCount2 = this.facts.length
+      keepGoing = !(factsCount1 == factsCount2)
+      count += 1
+    }
+  }
+
   addFacts(facts) {
     this.facts = mu.concatNoRepeat(this.facts, facts)
   }

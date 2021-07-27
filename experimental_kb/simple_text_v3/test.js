@@ -84,12 +84,20 @@ try{
 // t7
 const facts = [
   'at time 0, char1 is in room1',
-  'at time 0, char2 is in room2',
+  // 'at time 0, char2 is in room2',
+  'char2 is in room2 at time 0',
   'room1 is connected to room2',
   'room1 is connected to room3',
   'room1 is connected to room4',
   'there is door1 between room1 and room4',
 ]
 const wc1 = new WrdCase(wrds.wrdDfc4, facts)
-wc1.forward()
+// wc1.forward()
+// wc1.forward()
+wc1.forwardUntilNoChanges()
+console.log("wc1 forwardInferenceResults", JSON.stringify(wc1.forwardInferenceResults, ' ', 2))
+wc1.addFacts([
+  'char1 do: go to room2 at time 0'
+])
+wc1.forwardUntilNoChanges()
 console.log("wc1 forwardInferenceResults", JSON.stringify(wc1.forwardInferenceResults, ' ', 2))
