@@ -10,6 +10,8 @@ class WrdCase {
     this.rulesInstantiated = []
     this.forwardInferenceResults = []
     this.controller = new Controller();
+    // sort gRules
+    this.wrd.gRules = this.controller.sortGRules(this.wrd.gRules)
   }
 
   // should not double instantiate. can by duplicate clearing

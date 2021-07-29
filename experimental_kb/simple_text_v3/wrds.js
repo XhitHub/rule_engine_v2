@@ -45,7 +45,8 @@ const wrdDfc4 = {
       ],
       rhs: [
         'at time $t, $content'
-      ]
+      ],
+      priority: 999,
     },
     //fict rules
     {
@@ -121,16 +122,76 @@ const wrdDfc4 = {
       argChecks: [
         args => !ad(args, ['c1','c2']) || (args["c1"] != args["c2"]),
       ]
+    },
+    // continuing rules
+    {
+      lhs: [
+        'at time $t1, $c1 is in $r1'
+      ],
+      lhsNot: [
+        // 'at time $t2, $c1 is in $r2',
+        'at time $t1, $c1 do: go to $r2',
+      ],
+      rhs: [
+        'at time $t2, $c1 is in $r1'
+      ],
+      argChecks: [
+        args => !ad(args, ['r1','r2']) || (args["r1"] != args["r2"]),
+        args => !ad(args, ['t1','t2']) || (args["t1"]+1 == args["t2"]),
+      ],
+      argDeterm: {
+        t2: args => args['t1'] + 1,
+      }
+    },
+    // conflict rules
+    {
+      lhs: [
+        'at time $t1, $c1 is in $r1',
+        'at time $t1, $c1 is in $r2'
+      ],
+      rhs: [
+        'conflict: 1. at time $t1, $c1 is in $r1 ; 2. at time $t1, $c1 is in $r2'
+      ],
+      argChecks: [
+        args => !ad(args, ['r1','r2']) || (args["r1"] != args["r2"]),
+      ],
     }
   ],
 }
 /*
 how to handle continuous facts?
+  continuous facts:
+    at time x, asd
+    if no changes, then at time x+1, asd too
+      everytime there is changes, add a 'at time x+1, asd F'?
+    unless time x+1's one is specified, then at time x+1, asd too
+      hv lowest priority so that the new at time x+1 one will be determined out first
+  or to have rules going to use the continuous facts consider the closest fact instead?
+  2 set of facts, one is history with valued times, one is curr moment?
+    if there is change, will change curr moment
+    even if there is curr moment, curr moment - 1's time's fact won't get created, rule cannot operate on it
+  2 set of facts, one is history with valued times, one is latest version?
+    if there is change, will change latest version
+      but facts are all non-inplace, can only add new T facts, cannot modify already added facts
+    rules to use latest version instead of valued time version
 curr moment system:
   some rules operates with curr facts: they will have time being "at time curr" instead of at time integer val
   there is fact of curr time == integer val which will be progressing each turn
   inference non curr time version of the fact (int time version) with the curr time int val
     rules that works on non curr time will use these facts
+non-inplace problems:
+  too much facts in later stages
+  sols
+    remove early facts
+    remove too infrequently used facts
+      store usage count
+        when used in lhs, count++
+        at each turn, all facts count--
+        when count == 0, fact dies out
+  conflicts that are only discovered in later steps
+    check/detect conflict
+      conflict rules?
+    resolve conflict
 */
 
 module.exports = {

@@ -70,6 +70,9 @@ class Controller{
 
   // fill omitted fields in-place
   _fillOmittedGRuleFields(gRule) {
+    if (gRule.priority == undefined) {
+      gRule.priority = 0
+    }
     if (gRule.lhsNot == undefined) {
       gRule.lhsNot = []
     }
@@ -331,6 +334,12 @@ class Controller{
       argSubMap: rule.argSubMap,
     }
     return tempRule;
+  }
+
+  sortGRules(gRules) {
+    return gRules.sort((a,b) => {
+      return a.priority - b.priority
+    })
   }
 }
 

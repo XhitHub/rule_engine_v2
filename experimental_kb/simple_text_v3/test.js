@@ -92,12 +92,32 @@ const facts = [
   'there is door1 between room1 and room4',
 ]
 const wc1 = new WrdCase(wrds.wrdDfc4, facts)
+// t7.1
 // wc1.forward()
 // wc1.forward()
-wc1.forwardUntilNoChanges()
-console.log("wc1 forwardInferenceResults", JSON.stringify(wc1.forwardInferenceResults, ' ', 2))
+// wc1.forwardUntilNoChanges()
+// console.log("wc1 forwardInferenceResults", JSON.stringify(wc1.forwardInferenceResults, ' ', 2))
+// wc1.addFacts([
+//   'char1 do: go to room2 at time 0'
+// ])
+// wc1.forwardUntilNoChanges()
+// console.log("wc1 forwardInferenceResults", JSON.stringify(wc1.forwardInferenceResults, ' ', 2))
+
+// // t7.2
+// for(let i = 0; i<3; i++) {
+//   wc1.forward()
+//   console.log("wc1 forwardInferenceResults factsAfterInference " + i, JSON.stringify(wc1.forwardInferenceResults.map(item => item.factsAfterInference), ' ', 2))
+// }
+
+// t7.3
+wc1.forward()
+console.log("wc1 forwardInferenceResults factsAfterInference ", JSON.stringify(wc1.forwardInferenceResults.map(item => item.factsAfterInference), ' ', 2))
 wc1.addFacts([
-  'char1 do: go to room2 at time 0'
+  'char1 do: go to room2 at time 1'
 ])
-wc1.forwardUntilNoChanges()
-console.log("wc1 forwardInferenceResults", JSON.stringify(wc1.forwardInferenceResults, ' ', 2))
+wc1.forward()
+console.log("wc1 forwardInferenceResults factsAfterInference ", JSON.stringify(wc1.forwardInferenceResults.map(item => item.factsAfterInference), ' ', 2))
+wc1.forward()
+console.log("wc1 forwardInferenceResults factsAfterInference ", JSON.stringify(wc1.forwardInferenceResults.map(item => item.factsAfterInference), ' ', 2))
+wc1.forward()
+console.log("wc1 forwardInferenceResults factsAfterInference ", JSON.stringify(wc1.forwardInferenceResults.map(item => item.factsAfterInference), ' ', 2))
