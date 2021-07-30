@@ -60,6 +60,7 @@ class WrdCase {
   }
 
   forwardUntilNoChangesPriorityGroups(maxIterations) {
+    // within each priority group: forward until no changes
     this.gRulePriorityGroups.priorities.forEach(priority => {
       this.forwardUntilNoChangesWithWorkingGRules(maxIterations, this.gRulePriorityGroups.groups[priority])
     })

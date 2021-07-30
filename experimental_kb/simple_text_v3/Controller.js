@@ -362,6 +362,21 @@ class Controller{
     res.priorities.sort((a,b) => b-a)
     return res
   }
+
 }
+/*
+ways to support in-place facts modifications:
+1
+  have rhsNot: []: remove facts inside rhsNot from availFacts/currFacts/factsList
+  an in-place fact change 
+in-place fact change still will have issues on order of firing of rules and conflicts?
+virtual same time firing:
+  all facts inferenced are added to pending facts instead of directly adding to facts
+  if conflicts in found among pending facts
+    1
+      remove all conflicted facts, non conflicted facts remains
+      forward inference again
+      there will be more avail facts for the inference process to avoid conflict
+*/
 
 module.exports = Controller;
