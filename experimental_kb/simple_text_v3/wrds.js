@@ -131,6 +131,7 @@ const wrdDfc4 = {
       lhsNot: [
         // 'at time $t2, $c1 is in $r2',
         'at time $t1, $c1 do: go to $r2',
+        'max time: $t1',
       ],
       rhs: [
         'at time $t2, $c1 is in $r1'
@@ -192,6 +193,9 @@ non-inplace problems:
     check/detect conflict
       conflict rules?
     resolve conflict
+conflicts handling
+  some conflicts can only be declared in rules and system wont be able to know by its own
+    eg at same time T-x, char-x cannot be in 2 diff positions
 */
 
 module.exports = {

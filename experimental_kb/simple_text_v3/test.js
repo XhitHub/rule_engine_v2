@@ -1,4 +1,5 @@
 const Diff = require('diff');
+const fs = require('fs');
 
 const kn = require('./data_samples');
 const Controller = require('./Controller')
@@ -109,15 +110,43 @@ const wc1 = new WrdCase(wrds.wrdDfc4, facts)
 //   console.log("wc1 forwardInferenceResults factsAfterInference " + i, JSON.stringify(wc1.forwardInferenceResults.map(item => item.factsAfterInference), ' ', 2))
 // }
 
-// t7.3
-wc1.forward()
-console.log("wc1 forwardInferenceResults factsAfterInference ", JSON.stringify(wc1.forwardInferenceResults.map(item => item.factsAfterInference), ' ', 2))
+// // t7.3
+// wc1.forward()
+// console.log("wc1 forwardInferenceResults factsAfterInference ", JSON.stringify(wc1.forwardInferenceResults.map(item => item.factsAfterInference), ' ', 2))
+// wc1.addFacts([
+//   'char1 do: go to room2 at time 1'
+// ])
+// wc1.forward()
+// console.log("wc1 forwardInferenceResults factsAfterInference ", JSON.stringify(wc1.forwardInferenceResults.map(item => item.factsAfterInference), ' ', 2))
+// wc1.forward()
+// console.log("wc1 forwardInferenceResults factsAfterInference ", JSON.stringify(wc1.forwardInferenceResults.map(item => item.factsAfterInference), ' ', 2))
+// wc1.forward()
+// console.log("wc1 forwardInferenceResults factsAfterInference ", JSON.stringify(wc1.forwardInferenceResults.map(item => item.factsAfterInference), ' ', 2))
+
+
+// t7.4
 wc1.addFacts([
-  'char1 do: go to room2 at time 1'
+  'max time: 3'
 ])
-wc1.forward()
-console.log("wc1 forwardInferenceResults factsAfterInference ", JSON.stringify(wc1.forwardInferenceResults.map(item => item.factsAfterInference), ' ', 2))
-wc1.forward()
-console.log("wc1 forwardInferenceResults factsAfterInference ", JSON.stringify(wc1.forwardInferenceResults.map(item => item.factsAfterInference), ' ', 2))
-wc1.forward()
-console.log("wc1 forwardInferenceResults factsAfterInference ", JSON.stringify(wc1.forwardInferenceResults.map(item => item.factsAfterInference), ' ', 2))
+wc1.forwardUntilNoChangesPriorityGroups(5)
+// console.log(JSON.stringify(wc1.forwardInferenceResults.map(item => item.factsAfterInference), ' ', 2))
+
+wc1.removeFacts([
+  'max time: 3'
+])
+wc1.addFacts([
+  'char1 do: go to room2 at time 4'
+])
+wc1.forwardUntilNoChangesPriorityGroups(5)
+
+var resString = JSON.stringify(wc1.forwardInferenceResults.map(item => item.factsAfterInference), ' ', 2)
+console.log(resString)
+// wc1.forwardUntilNoChangesPriorityGroups(50)
+// console.log(JSON.stringify(wc1.forwardInferenceResults.map(item => item.factsAfterInference), ' ', 2))
+
+fs.writeFile('./results/res.json', resString, (err) => {
+  if (err) {
+      throw err;
+  }
+  console.log("JSON data is saved.");
+});

@@ -42,12 +42,12 @@ class Controller{
     }
     // beware of potential async
     this._forwardSubRecursive(initialSubRes, availFacts, finishedSubResList);
-    console.log("Controller -> forwardSub -> finishedSubResList", finishedSubResList)
+    // console.log("Controller -> forwardSub -> finishedSubResList", finishedSubResList)
     
     let instances = finishedSubResList.map(subRes => {
       return this.subGRule(subRes.gRule, subRes.argSubMap)
     })
-    console.log("Controller -> forwardSub -> instances", instances)
+    // console.log("Controller -> forwardSub -> instances", instances)
 
     // need all gFacts in lhsNOTs to pass notCheck in order to pass check NOTs
     let instancesPassingCheckNOTs = []
@@ -64,7 +64,7 @@ class Controller{
       }
     })
 
-    console.log("Controller -> forwardSub -> instancesPassingCheckNOTs", instancesPassingCheckNOTs)
+    // console.log("Controller -> forwardSub -> instancesPassingCheckNOTs", instancesPassingCheckNOTs)
     return instancesPassingCheckNOTs
   }
 
@@ -98,8 +98,8 @@ class Controller{
     // ngFact: gFact in NOTs, aFacts: availFacts
     // some parts of ngFact
     ngFact = this._subGFact(ngFact, argSubMap)
-    console.log("Controller -> _checkNots -> argSubMap", argSubMap)
-    console.log("Controller -> _checkNots -> ngFact", ngFact)
+    // console.log("Controller -> _checkNots -> argSubMap", argSubMap)
+    // console.log("Controller -> _checkNots -> ngFact", ngFact)
     let atLeast1Match = false
     aFacts.forEach(aFact => {
       // clone argSubMap to avoid over-subbed by prev iterations
@@ -184,7 +184,7 @@ class Controller{
             let d2 = diff[i+1]
             // add if d2 is not arg
             if (!(d2.removed && this._isArg(d2.value))) {
-              console.log("Controller -> _matchByDiff -> d2", d2)
+              // console.log("Controller -> _matchByDiff -> d2", d2)
               // add to currArgVal
               currArgVal += d.value
             }
@@ -198,9 +198,9 @@ class Controller{
     }
     // check if all subbed and is correct sub
     let gFact2 = this._subGFact(gFact, argSubMap)
-    console.log("Controller -> _matchByDiff -> aFact", aFact)
-    console.log("Controller -> _matchByDiff -> gFact2", gFact2)
-    console.log("Controller -> _matchByDiff -> gFact2 == aFact", gFact2 == aFact)
+    // console.log("Controller -> _matchByDiff -> aFact", aFact)
+    // console.log("Controller -> _matchByDiff -> gFact2", gFact2)
+    // console.log("Controller -> _matchByDiff -> gFact2 == aFact", gFact2 == aFact)
     return (gFact2 == aFact)
   }
 
@@ -213,9 +213,9 @@ class Controller{
     let sGFact = gFact.replace(argRegex, searchFormReplacement)
     let sGFactRegex = new RegExp(sGFact, 'g');
     let possToMatch = sGFactRegex.test(aFact)
-    console.log("Controller -> _tryMatchFact -> sGFact", sGFact)
-    console.log("Controller -> _tryMatchFact -> aFact", aFact)
-    console.log("Controller -> _tryMatchFact -> possToMatch", possToMatch)
+    // console.log("Controller -> _tryMatchFact -> sGFact", sGFact)
+    // console.log("Controller -> _tryMatchFact -> aFact", aFact)
+    // console.log("Controller -> _tryMatchFact -> possToMatch", possToMatch)
     if (possToMatch) {
       let argSubMap2 = mu.deepClone(subRes.argSubMap)
       let subRes2 = {
@@ -247,7 +247,7 @@ class Controller{
     // other than subbing with the 1st matched aFact, also need to go through remaining aFacts for other valid subbings
     // extract parts that are diff between fact obj form and fact text form
     
-    console.log("Controller -> _forwardSubRecursive -> subRes.remainingGFacts", subRes.remainingGFacts)
+    // console.log("Controller -> _forwardSubRecursive -> subRes.remainingGFacts", subRes.remainingGFacts)
     // if there is no more remaining gFacts left, the recursion is finished
     if (subRes.remainingGFacts.length == 0) {
       // this is a finished subRes where all gFacts in lhs is subbed successfully. add this to final res list and end recursion
@@ -265,11 +265,11 @@ class Controller{
         subRes2List.push(subRes2)
       }
     })
-    console.log("Controller -> _forwardSubRecursive -> subRes2List", subRes2List)
+    // console.log("Controller -> _forwardSubRecursive -> subRes2List", subRes2List)
     if (subRes2List.length > 0) {
       // recursively move on process
       subRes2List.forEach(sr2 => {
-        console.log("Controller -> _forwardSubRecursive -> sr2", sr2)
+        // console.log("Controller -> _forwardSubRecursive -> sr2", sr2)
         // move on to process the next lhs gFact
         this._forwardSubRecursive(sr2, availFacts, finishedSubResList)
       })
@@ -340,6 +340,27 @@ class Controller{
     return gRules.sort((a,b) => {
       return a.priority - b.priority
     })
+  }
+
+  groupGRulesByPriority(gRules) {
+    var res = {
+      priorities: [],
+      groups: {
+      },
+    }
+    gRules.forEach(gr => {
+      if (res.groups[gr.priority] == undefined) {
+        // is new priority
+        res.priorities.push(gr.priority)
+        res.groups[gr.priority] = [gr]
+      } else {
+        // push to existing list
+        res.groups[gr.priority].push(gr)
+      }
+    })
+    // sort desc
+    res.priorities.sort((a,b) => b-a)
+    return res
   }
 }
 

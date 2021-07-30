@@ -12,14 +12,20 @@ class WrdCase {
     this.controller = new Controller();
     // sort gRules
     this.wrd.gRules = this.controller.sortGRules(this.wrd.gRules)
+    // group gRules by priority
+    this.gRulePriorityGroups = this.controller.groupGRulesByPriority(this.wrd.gRules)
+  }
+
+  forward() {
+    this.forwardWithWorkingGRules(this.wrd.gRules)
   }
 
   // should not double instantiate. can by duplicate clearing
   // should not have double firing. sol: add fired = true flag to fired rules?
-  forward() {
+  forwardWithWorkingGRules(workingGRules) {
     let fRes = this.controller.getForwardInferenceRes(mu.deepClone(this.facts))
     // instantiate gRules for the curr avail facts, add instances to rules
-    this.wrd.gRules.forEach(gRule => {
+    workingGRules.forEach(gRule => {
       let grInstances = this.controller.forwardSubLogged(gRule, this.facts, fRes);
       this.rulesInstantiated = mu.concatNoRepeatByStringify(this.rulesInstantiated, grInstances)
     })
@@ -35,20 +41,44 @@ class WrdCase {
     this.forwardInferenceResults.push(fRes)
   }
 
-  forwardUntilNoChanges(maxIterations) {
+  forwardUntilNoChangesWithWorkingGRules(maxIterations, workingGRules) {
     let keepGoing = true
     let count = 0
-    while(keepGoing) {
+    while(keepGoing && (maxIterations == undefined || count <= maxIterations)) {
       let factsCount1 = this.facts.length
-      this.forward()
+      this.forwardWithWorkingGRules(workingGRules)
       let factsCount2 = this.facts.length
       keepGoing = !(factsCount1 == factsCount2)
       count += 1
     }
+    /*
+    problems
+      some rules like continuing rules should not be forward until no changes even if grouped
+      sols
+        add stopping conditions for such continuing rules as facts?
+    */
+  }
+
+  forwardUntilNoChangesPriorityGroups(maxIterations) {
+    this.gRulePriorityGroups.priorities.forEach(priority => {
+      this.forwardUntilNoChangesWithWorkingGRules(maxIterations, this.gRulePriorityGroups.groups[priority])
+    })
   }
 
   addFacts(facts) {
     this.facts = mu.concatNoRepeat(this.facts, facts)
+  }
+
+  // a func for workarounds?
+  removeFacts(factsToRemove) {
+    this.facts = this.facts.filter(item => {
+      if (factsToRemove.indexOf(item) != -1) {
+        // item is included in factsToRemove
+        return false
+      } else {
+        return true
+      }
+    })
   }
 }
 

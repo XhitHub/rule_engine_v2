@@ -92,13 +92,21 @@ const forwardInferenceRes = {
   checkNotsFails: [
     {
       gRule: {},
-      
+
     }
   ],
   // report contradictions and request for priority clarification?
   contradictions: [
     
   ]
+}
+
+const gRulesPriorityGroups = {
+  priorities: [],
+  groups: {
+    0: [],
+    1: [],
+  }
 }
 
 module.exports = {
