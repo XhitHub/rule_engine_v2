@@ -1,0 +1,270 @@
+const gRuleSubRes1 = {
+  argSubMap: {
+
+  },
+  instance: {
+    lhs: [],
+    rhs: []
+  }
+}
+
+// return bool of [can match the gFact or not]? 
+  // modify argSubMap in-place
+  tryMatchFacts(gFact, availFacts, argSubMap) {
+
+  }
+
+  obtainAllForwardFirableInstances(gRule, availFacts) {
+    gRule.searchForm.lhs.forEach(gFact => {
+
+    })
+  }
+
+  
+        if (argSubMap2[k] == undefined) {
+          // this arg is not subbed yet
+        } else {
+          if (argSubMap2[k] != fact[k]) {
+            // hv argSubMap entry and it doesnt match
+            canMatch = false;
+          }
+        }
+
+
+argConstraints: args => (
+      (!mu.allDefined(args, ['$time', '$time2']) || args['$time'] == args['$time2'] + 1)
+      &&
+      (!mu.allDefined(args, ['$time', '$time3']) || args['$time'] == args['$time3'] - 1)
+      // need to handle arg not yet subbed case by !mu.allDefined
+    ),
+
+
+  // return list of new facts
+  forward(rule, availFacts) {
+    let canFire = true;
+    rule.lhs.forEach(fact => {
+      if (!this.isFactTrue(fact, availFacts)) {
+        // at least 1 fact in xhs is false, cannot fire
+        canFire = false;
+      }
+    })
+    if (canFire) {
+      // potentially have redundant facts in availFacts. can have [clear redundant fact] regularly to resolve the issue?
+      return rule.rhs
+    } else {
+      return []
+    }
+    // return canFire
+  }
+
+
+  // modify availFacts in-place
+  forward(rule, availFacts) {
+    let canFire = true;
+    rule.lhs.forEach(fact => {
+      if (!this.isFactTrue(fact, availFacts)) {
+        // at least 1 fact in xhs is false, cannot fire
+        canFire = false;
+      }
+    })
+    if (canFire) {
+      // potentially have redundant facts in availFacts. can have [clear redundant fact] regularly to resolve the issue?
+      rule.rhs.forEach(rFact => {
+        availFacts.push(rFact)
+      })
+    }
+    // return canFire
+  }
+
+  const concatNoRepeat = (arr1, arr2) => {
+  let arr3 = arr1.concat(arr2)
+  let set = new Set(arr3)
+  let arr4 = Array.from(set)
+  return arr4
+}
+
+
+      argChecksV1: [
+        {
+          args: ["t1","t2"],
+          func: args => args["t2"] >= args["t1"],
+        }
+      ],
+
+
+
+      // check if subs are valid
+
+      // "$c1 st $c2 at $t1" '.+ st .+ at .+'
+      /*
+      for each arg
+        find surrounding: '$c1 st '
+        sSurr: '.+ st '
+        find in aFact:
+          'char1 st '
+        replace non arg parts by ''
+          'char1'
+        the arg = 'char1'
+      problems:
+        if there are connected args, e.g. "$c1 $c2 $c3 are in group $g1", won't be able to determine which pt is which arg.
+        the search mechanism is not robust enough.
+      */
+      // let args = gFact.
+
+
+
+// sub and modify subRes in-place, return bool of [can match or not]
+  _matchByDiff(gFact, aFact, subRes) {
+    var diff = Diff.diffWords(gFact, aFact);
+    let currArg = null;
+    let currArgVal = null;
+    let isFindingSub = false;
+    let argSubMap = subRes.argSubMap
+    // diff.forEach(d => {
+    for (var i=0; i<diff.length; i++) {
+      let d = diff[i]
+      if (d.removed) {
+        if (this._isArg(d.value)) {
+          // is handling new arg
+          // save last arg to argSubMap if there is last Arg
+          if (currArg != null) {
+            argSubMap[currArg] = this._fixArgVal(currArgVal)
+          }
+          currArg = this._getArgName(d.value)
+          // refresh currArgVal
+          currArgVal = ''
+          isFindingSub = true
+        }
+      } else {
+        if (d.added) {
+          // add to currArgVal
+          currArgVal += d.value
+        } else {
+          // whether add or not depends on whether next d is arg or not.
+          if (i+1 < diff.length) {
+            let d2 = diff[i+1]
+            // add if d2 is not arg
+            if (!(d2.removed && this._isArg(d2.value))) {
+              console.log("Controller -> _matchByDiff -> d2", d2)
+              // add to currArgVal
+              currArgVal += d.value
+            }
+          }
+        }
+      }
+    }
+    // handle last arg
+    if (currArg != null) {
+      argSubMap[currArg] = this._fixArgVal(currArgVal)
+    }
+    // check if all subbed and is correct sub
+    let gFact2 = this._subGFact(gFact, subRes.argSubMap)
+    // console.log("Controller -> _matchByDiff -> aFact", aFact)
+    // console.log("Controller -> _matchByDiff -> gFact2", gFact2)
+    console.log("Controller -> _matchByDiff -> gFact2 == aFact", gFact2 == aFact)
+    return (gFact2 == aFact)
+  }
+
+
+  // still need to check if arg constraints are fullfilled
+        let argCheckPass = true
+        subRes2.gRule.argChecks.forEach(argCheck => {
+          console.log("Controller -> _tryMatchFact -> argCheck", argCheck)
+          if (!argCheck(subRes2.argSubMap)) {
+            console.log("Controller -> _tryMatchFact -> subRes2.argSubMap", subRes2.argSubMap)
+            argCheckPass = false
+            console.log("Controller -> _tryMatchFact -> argCheckPass", argCheckPass)
+          }
+        })
+
+isFactTrue(fact, availFacts) {
+
+  }
+
+  // return new facts. more consistent with gRule instantiation
+  forward(rule, availFacts) {
+    let canFire = true;
+    rule.lhs.forEach(fact => {
+      if (!this.isFactTrue(fact, availFacts)) {
+        // at least 1 fact in xhs is false, cannot fire
+        canFire = false;
+      }
+    })
+    rule.lhsNot.forEach(nFact => {
+      if (this.isFactTrue(nFact, availFacts)) {
+        // at least 1 fact in lhsNot is true, cannot fire
+        canFire = false;
+      }
+    })
+    if (canFire) {
+      // potentially have redundant facts in availFacts. can have [clear redundant fact] regularly to resolve the issue?
+      return rule.rhs;
+    } else {
+      return []
+    }
+    // return canFire
+  }
+
+  
+
+  isFactTrue(fact, availFacts) {
+
+  }
+
+  // return new facts. more consistent with gRule instantiation
+  forward(rule, availFacts) {
+    let canFire = true;
+    rule.lhs.forEach(fact => {
+      if (!this.isFactTrue(fact, availFacts)) {
+        // at least 1 fact in xhs is false, cannot fire
+        canFire = false;
+      }
+    })
+    rule.lhsNot.forEach(nFact => {
+      if (this.isFactTrue(nFact, availFacts)) {
+        // at least 1 fact in lhsNot is true, cannot fire
+        canFire = false;
+      }
+    })
+    if (canFire) {
+      // potentially have redundant facts in availFacts. can have [clear redundant fact] regularly to resolve the issue?
+      return rule.rhs;
+    } else {
+      return []
+    }
+    // return canFire
+  }
+
+
+  visualizeGRule(gRule) {
+    let tempGRule = {
+      id: gRule.id,
+      lhs: gRule.lhs,
+      lhsNot: gRule.lhsNot,
+      rhs: gRule.rhs,
+    }
+    let vGRule = JSON.stringify(tempGRule, ' ', 2)
+    return vGRule
+  }
+
+
+
+  // should not double instantiate. can by duplicate clearing
+  // should not have double firing. sol: add fired = true flag to fired rules?
+  forward() {
+    let fRes = this.controller.getForwardInferenceRes(mu.deepClone(this.facts))
+    // instantiate gRules for the curr avail facts, add instances to rules
+    this.wrd.gRules.forEach(gRule => {
+      let grInstances = this.controller.forwardSubLogged(gRule, this.facts, fRes);
+      this.rules = mu.concatNoRepeatByStringify(this.rules, grInstances)
+    })
+    // inference with this.rules
+    this.rules.forEach(rule => {
+      // the rules are already been checked to be passing lhsNot in forwardSub
+      // let newFacts = this.controller.forward(rule, this.facts)
+      this.facts = mu.concatNoRepeat(this.facts, rule.rhs)
+    })
+
+    fRes.factsAfterInference = mu.deepClone(this.facts)
+    this.forwardInferenceResults.push(fRes)
+  }
