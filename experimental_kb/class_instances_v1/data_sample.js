@@ -26,15 +26,15 @@ var activeCase = {
     ],
   }
 
-  init() {
+  // init() {
 
-  }
+  // }
 
-  update() {
-    // foreach instances, call update()
-  }
+  // update() {
+  //   // foreach instances, call update()
+  // }
 
-  persist() {
+  // serialize() {
 
-  }
+  // }
 }

@@ -3,7 +3,7 @@ var data_sample = {
   rate: 2,
 }
 
-class Test {
+class TestEntity {
   constructor(data) {
     this.data = data
   }
@@ -20,4 +20,4 @@ class Test {
   }
 }
 
-module.exports = Test
+module.exports = TestEntity
